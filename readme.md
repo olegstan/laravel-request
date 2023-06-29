@@ -16,8 +16,8 @@ Api.get('active-trade', 'index')
     
 You can use
 
-all or first or paginate 
-      
+all or first or paginate
+
 usage POST data
 
 ```

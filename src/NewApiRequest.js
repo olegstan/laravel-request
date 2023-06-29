@@ -135,42 +135,25 @@ export default class ApiRequest
    * @param success
    * @param error
    * @param params
-   * @param dataKey
-   * @param argumentsKey
-   * @param queryKey
-   * @return {ApiRequest}
+   * @returns {ApiRequest}
    */
   call(success = function () {
   }, error = function () {
-  }, params = {}, dataKey = 'data', argumentsKey = 'arguments', queryKey = 'query')
+  }, params = {})
   {
     let self = this;
     this.callSuccess = success;
     this.callError = error;
 
     let notify = null;
-
-    let data = {};
-
-    if (argumentsKey) {
-      data[argumentsKey] = this.arguments;
-    }
-
-    if (queryKey) {
-      data[queryKey] = this.builder.toArray();
-    }
-
-    if (dataKey) {
-      data[dataKey] = this.data;
-    } else {
-      data = this.data;
-    }
-
-
     this.xhr = Api.makeRequest({
       url: process.env.REACT_APP_API_URL + '/api/v1/call/' + this.target + '/' + this.focus,
       method: this.method,
-      data: data,
+      data: {
+        arguments: this.arguments,
+        query: this.builder.toArray(),
+        data: this.data,
+      },
       ...params,
       dataType: "json",
       success: (response, status, xhr) => {
@@ -222,33 +205,21 @@ export default class ApiRequest
 
   callUrl(success = function () {
   }, error = function () {
-  }, params = {}, dataKey = 'data', argumentsKey = 'arguments', queryKey = 'query')
+  }, params = {})
   {
     let self = this;
     this.callSuccess = success;
     this.callError = error;
 
-    let data = {};
-
-    if (argumentsKey) {
-      data[argumentsKey] = this.arguments;
-    }
-
-    if (queryKey) {
-      data[queryKey] = this.builder.toArray();
-    }
-
-    if (dataKey) {
-      data[dataKey] = this.data;
-    } else {
-      data = this.data;
-    }
-
     let notify = null;
     Api.makeRequest({
       url: this.url,
       method: this.method,
-      data: data,
+      data: {
+        arguments: this.arguments,
+        query: this.builder.toArray(),
+        data: this.data,
+      },
       ...params,
       success: (response, status, xhr) => {
         if (response && response.result === 'success') {

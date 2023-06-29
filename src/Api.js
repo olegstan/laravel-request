@@ -9,12 +9,12 @@ export default class Api
    * @param focus
    * @param data
    * @param method
-   * @returns {ApiRequest}
+   * @return {ApiRequest}
    */
-    static create(target, focus, data = {}, method = 'GET')
-    {
-        return new ApiRequest(target, focus, data, method);
-    }
+  static create(target, focus, data = {}, method = 'GET')
+  {
+    return new ApiRequest(target, focus, data, method);
+  }
 
   /**
    *
@@ -23,38 +23,12 @@ export default class Api
    * @param arg
    * @param data
    * @param method
-   * @returns {ApiRequest}
+   * @return {ApiRequest}
    */
-    static createArg(target, focus, arg, data = {}, method = 'GET')
-    {
-        return new ApiRequest(target, focus, data, method).addArg(arg);
-    }
-
-  /**
-   *
-   * @param target
-   * @param focus
-   * @param arg
-   * @param data
-   * @returns {ApiRequest}
-   */
-    static getArg(target, focus, arg, data = {})
-    {
-        return Api.get(target, focus, data).addArg(arg);
-    }
-
-  /**
-   *
-   * @param target
-   * @param focus
-   * @param arg
-   * @param data
-   * @returns {ApiRequest}
-   */
-    static postArg(target, focus, arg, data = {})
+  static createArg(target, focus, arg, data = {}, method = 'GET')
   {
-        return Api.post(target, focus, data).addArg(arg);
-    }
+    return new ApiRequest(target, focus, data, method).addArg(arg);
+  }
 
   /**
    *
@@ -62,45 +36,71 @@ export default class Api
    * @param focus
    * @param arg
    * @param data
-   * @returns {ApiRequest}
+   * @return {ApiRequest}
    */
-    static putArg(target, focus, arg, data = {})
+  static getArg(target, focus, arg, data = {})
   {
-        return Api.put(target, focus, data).addArg(arg);
-    }
+    return Api.get(target, focus, data).addArg(arg);
+  }
+
+  /**
+   *
+   * @param target
+   * @param focus
+   * @param arg
+   * @param data
+   * @return {ApiRequest}
+   */
+  static postArg(target, focus, arg, data = {})
+  {
+    return Api.post(target, focus, data).addArg(arg);
+  }
+
+  /**
+   *
+   * @param target
+   * @param focus
+   * @param arg
+   * @param data
+   * @return {ApiRequest}
+   */
+  static putArg(target, focus, arg, data = {})
+  {
+    return Api.put(target, focus, data).addArg(arg);
+  }
 
   /**
    *
    * @param url
    * @param data
-   * @returns {*}
+   * @return {ApiRequest}
    */
-    static getUrl(url, data = {})
-    {
-      return (new ApiRequest('', '', data, 'GET')).setUrl(url);
-    }
+  static getUrl(url, data = {})
+  {
+    return (new ApiRequest('', '', data, 'GET')).setUrl(url);
+  }
 
   /**
    *
    * @param url
    * @param data
-   * @returns {*}
+   * @return {ApiRequest}
    */
-    static postUrl(url, data = {})
-    {
-      return (new ApiRequest('', '', data, 'POST')).setUrl(url);
-    }
+  static postUrl(url, data = {})
+  {
+    return (new ApiRequest('', '', data, 'POST')).setUrl(url);
+  }
 
   /**
    *
    * @param url
    * @param data
-   * @returns {*}
+   * @return {ApiRequest}
    */
-    static putUrl(url, data = {})
-    {
-      return (new ApiRequest('', '', data, 'PUT')).setUrl(url);
-    }
+  static putUrl(url, data = {})
+  {
+    return (new ApiRequest('', '', data, 'PUT')).setUrl(url);
+  }
 
   /**
    *
@@ -109,10 +109,10 @@ export default class Api
    * @param data
    * @returns {ApiRequest}
    */
-    static get(target, focus, data = {})
-    {
-        return new ApiRequest(target, focus, data, 'GET');
-    }
+  static get(target, focus, data = {})
+  {
+    return new ApiRequest(target, focus, data, 'GET');
+  }
 
   /**
    *
@@ -121,10 +121,10 @@ export default class Api
    * @param data
    * @returns {ApiRequest}
    */
-    static post(target, focus, data = {})
-    {
-        return new ApiRequest(target, focus, data, 'POST');
-    }
+  static post(target, focus, data = {})
+  {
+    return new ApiRequest(target, focus, data, 'POST');
+  }
 
   /**
    *
@@ -133,10 +133,10 @@ export default class Api
    * @param data
    * @returns {ApiRequest}
    */
-    static put(target, focus, data = {})
-    {
-        return new ApiRequest(target, focus, data, 'PUT');
-    }
+  static put(target, focus, data = {})
+  {
+    return new ApiRequest(target, focus, data, 'PUT');
+  }
 
   /**
    *
@@ -144,52 +144,31 @@ export default class Api
    * @param focus
    * @param id
    * @param data
-   * @returns {ApiRequest}
+   * @return {ApiRequest}
    */
-    static delete(target, focus, id, data = {})
-    {
-        return new ApiRequest(target, focus, data, 'DELETE').addArg(id);
+  static delete(target, focus, id, data = {})
+  {
+    return new ApiRequest(target, focus, data, 'DELETE').addArg(id);
+  }
+
+  static makeRequest(obj)
+  {
+    obj.xhrFields = {withCredentials: true};
+
+    if (typeof obj["data"] === 'undefined') {
+      obj["data"] = {};
+    }
+    if (typeof obj["headers"] === 'undefined') {
+      obj["headers"] = {};
     }
 
-    /**
-     *
-     * @param obj
-     */
-    static makeRequest(obj)
-    {
-        var token = 'api_token';
-        obj.xhrFields = {withCredentials: true};
 
-        if (typeof obj["data"] === 'undefined') {
-            obj["data"] = {};
-        }
-        if (typeof obj["headers"] === 'undefined') {
-            obj["headers"] = {};
-        }
+    let api_token = localStorage.getItem('api_token');
 
-        if (token === 'csrf_token') {
-            //csrf_token
-            obj["headers"]["X-CSRF-TOKEN"] = $("meta[name='_token']").attr("content");
-        } else if (token === 'api_token') {
-            //access_token
-            let api_token = localStorage.getItem('api_token');
-
-            // console.info(api_token);
-            if (api_token)
-            {
-                obj["data"]["api_token"] = api_token;
-            }
-        }
-
-        if (obj.method === 'PUT') {
-            obj.method = 'POST';
-            obj.data._method = 'PUT';
-        }
-        if (obj.method === 'DELETE') {
-            obj.method = 'POST';
-            obj.data._method = 'DELETE';
-        }
-
-        $.ajax(obj);
+    if (api_token) {
+      obj["headers"]["Authorization"] = api_token;
     }
-};
+
+    return $.ajax(obj)
+  }
+}
