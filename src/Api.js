@@ -1,8 +1,7 @@
 import ApiRequest from "./ApiRequest";
 import $ from 'jquery';
 
-export default class Api
-{
+export default class Api {
   /**
    *
    * @param target
@@ -11,8 +10,7 @@ export default class Api
    * @param method
    * @return {ApiRequest}
    */
-  static create(target, focus, data = {}, method = 'GET')
-  {
+  static create(target, focus, data = {}, method = 'GET') {
     return new ApiRequest(target, focus, data, method);
   }
 
@@ -25,8 +23,7 @@ export default class Api
    * @param method
    * @return {ApiRequest}
    */
-  static createArg(target, focus, arg, data = {}, method = 'GET')
-  {
+  static createArg(target, focus, arg, data = {}, method = 'GET') {
     return new ApiRequest(target, focus, data, method).addArg(arg);
   }
 
@@ -38,8 +35,7 @@ export default class Api
    * @param data
    * @return {ApiRequest}
    */
-  static getArg(target, focus, arg, data = {})
-  {
+  static getArg(target, focus, arg, data = {}) {
     return Api.get(target, focus, data).addArg(arg);
   }
 
@@ -51,8 +47,7 @@ export default class Api
    * @param data
    * @return {ApiRequest}
    */
-  static postArg(target, focus, arg, data = {})
-  {
+  static postArg(target, focus, arg, data = {}) {
     return Api.post(target, focus, data).addArg(arg);
   }
 
@@ -64,8 +59,7 @@ export default class Api
    * @param data
    * @return {ApiRequest}
    */
-  static putArg(target, focus, arg, data = {})
-  {
+  static putArg(target, focus, arg, data = {}) {
     return Api.put(target, focus, data).addArg(arg);
   }
 
@@ -109,11 +103,9 @@ export default class Api
    * @param data
    * @returns {ApiRequest}
    */
-  static get(target, focus, data = {})
-  {
+  static get(target, focus, data = {}) {
     return new ApiRequest(target, focus, data, 'GET');
   }
-
   /**
    *
    * @param target
@@ -121,11 +113,9 @@ export default class Api
    * @param data
    * @returns {ApiRequest}
    */
-  static post(target, focus, data = {})
-  {
+  static post(target, focus, data = {}) {
     return new ApiRequest(target, focus, data, 'POST');
   }
-
   /**
    *
    * @param target
@@ -133,8 +123,7 @@ export default class Api
    * @param data
    * @returns {ApiRequest}
    */
-  static put(target, focus, data = {})
-  {
+  static put(target, focus, data = {}) {
     return new ApiRequest(target, focus, data, 'PUT');
   }
 
@@ -146,13 +135,11 @@ export default class Api
    * @param data
    * @return {ApiRequest}
    */
-  static delete(target, focus, id, data = {})
-  {
+  static delete(target, focus, id, data = {}) {
     return new ApiRequest(target, focus, data, 'DELETE').addArg(id);
   }
 
-  static makeRequest(obj)
-  {
+  static makeRequest(obj) {
     obj.xhrFields = {withCredentials: true};
 
     if (typeof obj["data"] === 'undefined') {
@@ -165,9 +152,19 @@ export default class Api
 
     let api_token = localStorage.getItem('api_token');
 
-    if (api_token) {
+    if (api_token)
+    {
       obj["headers"]["Authorization"] = api_token;
     }
+
+    let one_time_token = localStorage.getItem('token');
+
+    if (one_time_token)
+    {
+      obj["data"]['token'] = one_time_token;
+    }
+
+    // obj["data"]['debug'] = true;
 
     return $.ajax(obj)
   }

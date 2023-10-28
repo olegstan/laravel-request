@@ -1,18 +1,16 @@
 import NewApiRequest from "./NewApiRequest";
 import axios from 'axios';
 
-export default class NewApi
-{
+export default class NewApi {
   /**
-   *
+   * 
    * @param target
    * @param focus
    * @param data
    * @param method
    * @return {NewApiRequest}
    */
-  static create(target, focus, data = {}, method = 'GET')
-  {
+  static create(target, focus, data = {}, method = 'GET') {
     return new NewApiRequest(target, focus, data, method);
   }
 
@@ -25,8 +23,7 @@ export default class NewApi
    * @param method
    * @return {NewApiRequest}
    */
-  static createArg(target, focus, arg, data = {}, method = 'GET')
-  {
+  static createArg(target, focus, arg, data = {}, method = 'GET') {
     return new NewApiRequest(target, focus, data, method).addArg(arg);
   }
 
@@ -38,8 +35,7 @@ export default class NewApi
    * @param data
    * @return {NewApiRequest}
    */
-  static getArg(target, focus, arg, data = {})
-  {
+  static getArg(target, focus, arg, data = {}) {
     return NewApi.get(target, focus, data).addArg(arg);
   }
 
@@ -51,8 +47,7 @@ export default class NewApi
    * @param data
    * @return {NewApiRequest}
    */
-  static postArg(target, focus, arg, data = {})
-  {
+  static postArg(target, focus, arg, data = {}) {
     return NewApi.post(target, focus, data).addArg(arg);
   }
 
@@ -64,8 +59,7 @@ export default class NewApi
    * @param data
    * @return {NewApiRequest}
    */
-  static putArg(target, focus, arg, data = {})
-  {
+  static putArg(target, focus, arg, data = {}) {
     return NewApi.put(target, focus, data).addArg(arg);
   }
 
@@ -109,11 +103,9 @@ export default class NewApi
    * @param data
    * @returns {NewApiRequest}
    */
-  static get(target, focus, data = {})
-  {
+  static get(target, focus, data = {}) {
     return new NewApiRequest(target, focus, data, 'GET');
   }
-
   /**
    *
    * @param target
@@ -121,11 +113,9 @@ export default class NewApi
    * @param data
    * @returns {NewApiRequest}
    */
-  static post(target, focus, data = {})
-  {
+  static post(target, focus, data = {}) {
     return new NewApiRequest(target, focus, data, 'POST');
   }
-
   /**
    *
    * @param target
@@ -133,8 +123,7 @@ export default class NewApi
    * @param data
    * @returns {NewApiRequest}
    */
-  static put(target, focus, data = {})
-  {
+  static put(target, focus, data = {}) {
     return new NewApiRequest(target, focus, data, 'PUT');
   }
 
@@ -146,8 +135,7 @@ export default class NewApi
    * @param data
    * @return {ApiRequest}
    */
-  static delete(target, focus, id, data = {})
-  {
+  static delete(target, focus, id, data = {}) {
     return new NewApiRequest(target, focus, data, 'DELETE').addArg(id);
   }
 
@@ -160,7 +148,8 @@ export default class NewApi
     headers['Content-Type'] = 'application/json';
 
     let api_token = localStorage.getItem('api_token');
-    if (api_token) {
+    if (api_token)
+    {
       headers["Authorization"] = api_token;
     }
 
