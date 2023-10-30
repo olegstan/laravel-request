@@ -1,170 +1,63 @@
 import NewApiRequest from "./NewApiRequest";
 import axios from 'axios';
+import Api from "./Api";
 
-export default class NewApi {
-  /**
-   * 
-   * @param target
-   * @param focus
-   * @param data
-   * @param method
-   * @return {NewApiRequest}
-   */
-  static create(target, focus, data = {}, method = 'GET') {
-    return new NewApiRequest(target, focus, data, method);
-  }
-
+export default class NewApi extends Api
+{
   /**
    *
-   * @param target
-   * @param focus
-   * @param arg
-   * @param data
-   * @param method
-   * @return {NewApiRequest}
+   * @type {ApiRequest}
    */
-  static createArg(target, focus, arg, data = {}, method = 'GET') {
-    return new NewApiRequest(target, focus, data, method).addArg(arg);
-  }
+  static requestClass = NewApiRequest;
 
-  /**
-   *
-   * @param target
-   * @param focus
-   * @param arg
-   * @param data
-   * @return {NewApiRequest}
-   */
-  static getArg(target, focus, arg, data = {}) {
-    return NewApi.get(target, focus, data).addArg(arg);
-  }
-
-  /**
-   *
-   * @param target
-   * @param focus
-   * @param arg
-   * @param data
-   * @return {NewApiRequest}
-   */
-  static postArg(target, focus, arg, data = {}) {
-    return NewApi.post(target, focus, data).addArg(arg);
-  }
-
-  /**
-   *
-   * @param target
-   * @param focus
-   * @param arg
-   * @param data
-   * @return {NewApiRequest}
-   */
-  static putArg(target, focus, arg, data = {}) {
-    return NewApi.put(target, focus, data).addArg(arg);
-  }
-
-  /**
-   *
-   * @param url
-   * @param data
-   * @return {NewApiRequest}
-   */
-  static getUrl(url, data = {})
+  static async makeRequest({url, method, data, dataType, params, headers, success, error})
   {
-    return (new NewApiRequest('', '', data, 'GET')).setUrl(url);
-  }
+    try {
+      if (typeof headers === 'undefined') {
+        headers = {};
+      }
 
-  /**
-   *
-   * @param url
-   * @param data
-   * @return {NewApiRequest}
-   */
-  static postUrl(url, data = {})
-  {
-    return (new NewApiRequest('', '', data, 'POST')).setUrl(url);
-  }
+      if(dataType === 'json')
+      {
+        headers['Content-Type'] = 'application/json';
+      }
 
-  /**
-   *
-   * @param url
-   * @param data
-   * @return {NewApiRequest}
-   */
-  static putUrl(url, data = {})
-  {
-    return (new NewApiRequest('', '', data, 'PUT')).setUrl(url);
-  }
+      let api_token = localStorage.getItem('api_token');
+      if (api_token)
+      {
+        headers["Authorization"] = api_token;
+      }
 
-  /**
-   *
-   * @param target
-   * @param focus
-   * @param data
-   * @returns {NewApiRequest}
-   */
-  static get(target, focus, data = {}) {
-    return new NewApiRequest(target, focus, data, 'GET');
-  }
-  /**
-   *
-   * @param target
-   * @param focus
-   * @param data
-   * @returns {NewApiRequest}
-   */
-  static post(target, focus, data = {}) {
-    return new NewApiRequest(target, focus, data, 'POST');
-  }
-  /**
-   *
-   * @param target
-   * @param focus
-   * @param data
-   * @returns {NewApiRequest}
-   */
-  static put(target, focus, data = {}) {
-    return new NewApiRequest(target, focus, data, 'PUT');
-  }
-
-  /**
-   *
-   * @param target
-   * @param focus
-   * @param id
-   * @param data
-   * @return {ApiRequest}
-   */
-  static delete(target, focus, id, data = {}) {
-    return new NewApiRequest(target, focus, data, 'DELETE').addArg(id);
-  }
-
-  static makeRequest({url, method, data, params, headers})
-  {
-    if (typeof headers === 'undefined') {
-      headers = {};
-    }
-
-    headers['Content-Type'] = 'application/json';
-
-    let api_token = localStorage.getItem('api_token');
-    if (api_token)
-    {
-      headers["Authorization"] = api_token;
-    }
-
-    return axios({
-      url: url,
-      method: method,
-      data: data,
-      params: params,
-      headers: headers
-    })
-      .then(response => {
-        return response.data;
-      })
-      .catch(error => {
-        throw new Error(`API request to ${url} failed: ${error}`);
+      const response = await axios({
+        url: url,
+        method: method,
+        data: data,
+        params: params,
+        headers: headers
       });
+
+      // get status code
+      const statusCode = response.status;
+
+      // get full response object
+      const xhr = response;
+
+      const data = response.data;
+
+      success(data, statusCode, xhr);
+
+    } catch(e) {
+      throw new Error(`API request to ${url} failed: ${error}`);
+
+      const xhr = e.response;
+
+      // status code
+      const statusCode = e.response.status;
+
+      // status text
+      const statusText = e.response.statusText;
+
+      error(xhr, statusCode, statusText);
+    }
   }
 }

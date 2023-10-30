@@ -1,7 +1,13 @@
 import ApiRequest from "./ApiRequest";
-import $ from 'jquery';
 
 export default class Api {
+
+  /**
+   *
+   * @type {ApiRequest}
+   */
+  static requestClass = ApiRequest;
+
   /**
    *
    * @param target
@@ -11,7 +17,7 @@ export default class Api {
    * @return {ApiRequest}
    */
   static create(target, focus, data = {}, method = 'GET') {
-    return new ApiRequest(target, focus, data, method);
+    return this.requestClass(target, focus, data, method);
   }
 
   /**
@@ -24,7 +30,7 @@ export default class Api {
    * @return {ApiRequest}
    */
   static createArg(target, focus, arg, data = {}, method = 'GET') {
-    return new ApiRequest(target, focus, data, method).addArg(arg);
+    return this.requestClass(target, focus, data, method).addArg(arg);
   }
 
   /**
@@ -36,7 +42,7 @@ export default class Api {
    * @return {ApiRequest}
    */
   static getArg(target, focus, arg, data = {}) {
-    return Api.get(target, focus, data).addArg(arg);
+    return this.get(target, focus, data).addArg(arg);
   }
 
   /**
@@ -48,7 +54,7 @@ export default class Api {
    * @return {ApiRequest}
    */
   static postArg(target, focus, arg, data = {}) {
-    return Api.post(target, focus, data).addArg(arg);
+    return this.post(target, focus, data).addArg(arg);
   }
 
   /**
@@ -60,7 +66,7 @@ export default class Api {
    * @return {ApiRequest}
    */
   static putArg(target, focus, arg, data = {}) {
-    return Api.put(target, focus, data).addArg(arg);
+    return this.put(target, focus, data).addArg(arg);
   }
 
   /**
@@ -71,7 +77,7 @@ export default class Api {
    */
   static getUrl(url, data = {})
   {
-    return (new ApiRequest('', '', data, 'GET')).setUrl(url);
+    return (this.requestClass('', '', data, 'GET')).setUrl(url);
   }
 
   /**
@@ -82,7 +88,7 @@ export default class Api {
    */
   static postUrl(url, data = {})
   {
-    return (new ApiRequest('', '', data, 'POST')).setUrl(url);
+    return (this.requestClass('', '', data, 'POST')).setUrl(url);
   }
 
   /**
@@ -93,7 +99,7 @@ export default class Api {
    */
   static putUrl(url, data = {})
   {
-    return (new ApiRequest('', '', data, 'PUT')).setUrl(url);
+    return (this.requestClass('', '', data, 'PUT')).setUrl(url);
   }
 
   /**
@@ -104,7 +110,7 @@ export default class Api {
    * @returns {ApiRequest}
    */
   static get(target, focus, data = {}) {
-    return new ApiRequest(target, focus, data, 'GET');
+    return this.requestClass(target, focus, data, 'GET');
   }
   /**
    *
@@ -114,7 +120,7 @@ export default class Api {
    * @returns {ApiRequest}
    */
   static post(target, focus, data = {}) {
-    return new ApiRequest(target, focus, data, 'POST');
+    return this.requestClass(target, focus, data, 'POST');
   }
   /**
    *
@@ -124,7 +130,7 @@ export default class Api {
    * @returns {ApiRequest}
    */
   static put(target, focus, data = {}) {
-    return new ApiRequest(target, focus, data, 'PUT');
+    return this.requestClass(target, focus, data, 'PUT');
   }
 
   /**
@@ -136,9 +142,14 @@ export default class Api {
    * @return {ApiRequest}
    */
   static delete(target, focus, id, data = {}) {
-    return new ApiRequest(target, focus, data, 'DELETE').addArg(id);
+    return this.requestClass(target, focus, data, 'DELETE').addArg(id);
   }
 
+  /**
+   *
+   * @param obj
+   * @return {*}
+   */
   static makeRequest(obj) {
     obj.xhrFields = {withCredentials: true};
 
