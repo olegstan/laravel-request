@@ -1,6 +1,5 @@
 import Api from "./Api";
 import ApiRequest from "./ApiRequest";
-import NotifyManager from "../../interface/notify/NotifyManager";
 
 /**
  *
@@ -31,7 +30,7 @@ export default class NewApiRequest extends ApiRequest
         {
           if (response.meta && response.meta.text)
           {
-            notify = this.notify ? NotifyManager.info('Успешно', response.meta.text) : null
+            notify = this.notify ? this.getNotifyManager().info('Успешно', response.meta.text) : null
           }
           self.toBind(response);
           self.resetBindErrors();

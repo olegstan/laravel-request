@@ -1,7 +1,6 @@
 import Builder from "./Builder";
 import Binding from "./Binding";
 import Api from "./Api";
-import NotifyManager from "../../interface/notify/NotifyManager";
 
 /**
  *
@@ -18,6 +17,12 @@ export default class ApiRequest {
    * @type {XMLHttpRequest|null}
    */
   xhr = null;
+
+  /**
+   *
+   * @type {null}
+   */
+  static notifyClass = null;
 
   /**
    *
@@ -54,6 +59,11 @@ export default class ApiRequest {
 
       return;
     });
+  }
+
+  getNotifyManager()
+  {
+    return ApiRequest.notifyClass;
   }
 
   setUrl(url)
@@ -186,7 +196,7 @@ export default class ApiRequest {
 
             if(result)
             {
-              notify = NotifyManager.info('Успешно', response.meta.text)
+              notify = this.getNotifyManager().info('Успешно', response.meta.text)
             }
           }
           self.toBind(response);
@@ -212,7 +222,7 @@ export default class ApiRequest {
         {
           switch (xhr.status) {
             case 0://точно ошибка
-              notify = NotifyManager.error('Ошибка', errorText);
+              notify = this.getNotifyManager().error('Ошибка', errorText);
               break;
             case 404:
 
@@ -220,16 +230,16 @@ export default class ApiRequest {
             default:
               if(xhr?.responseJSON?.meta.text)
               {
-                notify = NotifyManager.error('Ошибка', xhr.responseJSON.meta.text);
+                notify = this.getNotifyManager().error('Ошибка', xhr.responseJSON.meta.text);
               }else if(xhr?.responseJSON?.meta.message)
               {
-                notify = NotifyManager.error('Ошибка', xhr.responseJSON.meta.message);
+                notify = this.getNotifyManager().error('Ошибка', xhr.responseJSON.meta.message);
               }else{
                 if(typeof errorText === 'string')
                 {
-                  notify = NotifyManager.error('Ошибка', errorText);
+                  notify = this.getNotifyManager().error('Ошибка', errorText);
                 }else if(errorText?.message && typeof errorText.message === 'string'){
-                  notify = NotifyManager.error('Ошибка', errorText.message);
+                  notify = this.getNotifyManager().error('Ошибка', errorText.message);
                 }
               }
               break;
@@ -237,18 +247,18 @@ export default class ApiRequest {
         }
       } catch (e) {
         console.error(e);
-        notify = this.notify ? NotifyManager.error('Ошибка') : null;
+        notify = this.notify ? this.getNotifyManager().error('Ошибка') : null;
       }
     }
     else if (xhr.readyState === 0) {
-      notify = NotifyManager.errorOnce('network_error', 'Ошибка', ' (Network Error) или невозможность получения доступа к сети');
+      notify = this.getNotifyManager().errorOnce('network_error', 'Ошибка', ' (Network Error) или невозможность получения доступа к сети');
     }
     else {
       if(typeof errorText === 'string')
       {
-        notify = NotifyManager.error('Ошибка', errorText);
+        notify = this.getNotifyManager().error('Ошибка', errorText);
       }else if(errorText?.message && typeof errorText.message === 'string'){
-        notify = NotifyManager.error('Ошибка', errorText.message);
+        notify = this.getNotifyManager().error('Ошибка', errorText.message);
       }
     }
 
@@ -300,7 +310,7 @@ export default class ApiRequest {
         {
           if (response.meta && response.meta.text)
           {
-            notify = this.notify ? NotifyManager.info('Успешно', response.meta.text) : null
+            notify = this.notify ? this.getNotifyManager().info('Успешно', response.meta.text) : null
           }
           self.toBind(response);
           self.resetBindErrors();
