@@ -1,4 +1,5 @@
 import ApiRequest from "./ApiRequest";
+import axios from "axios";
 
 export default class Api {
 
@@ -17,7 +18,7 @@ export default class Api {
    * @return {ApiRequest}
    */
   static create(target, focus, data = {}, method = 'GET') {
-    return this.requestClass(target, focus, data, method);
+    return new this.requestClass(target, focus, data, method);
   }
 
   /**
@@ -30,7 +31,7 @@ export default class Api {
    * @return {ApiRequest}
    */
   static createArg(target, focus, arg, data = {}, method = 'GET') {
-    return this.requestClass(target, focus, data, method).addArg(arg);
+    return new this.requestClass(target, focus, data, method).addArg(arg);
   }
 
   /**
@@ -77,7 +78,7 @@ export default class Api {
    */
   static getUrl(url, data = {})
   {
-    return (this.requestClass('', '', data, 'GET')).setUrl(url);
+    return (new this.requestClass('', '', data, 'GET')).setUrl(url);
   }
 
   /**
@@ -88,7 +89,7 @@ export default class Api {
    */
   static postUrl(url, data = {})
   {
-    return (this.requestClass('', '', data, 'POST')).setUrl(url);
+    return (new this.requestClass('', '', data, 'POST')).setUrl(url);
   }
 
   /**
@@ -99,7 +100,7 @@ export default class Api {
    */
   static putUrl(url, data = {})
   {
-    return (this.requestClass('', '', data, 'PUT')).setUrl(url);
+    return (new this.requestClass('', '', data, 'PUT')).setUrl(url);
   }
 
   /**
@@ -110,7 +111,7 @@ export default class Api {
    * @returns {ApiRequest}
    */
   static get(target, focus, data = {}) {
-    return this.requestClass(target, focus, data, 'GET');
+    return new this.requestClass(target, focus, data, 'GET');
   }
   /**
    *
@@ -120,7 +121,7 @@ export default class Api {
    * @returns {ApiRequest}
    */
   static post(target, focus, data = {}) {
-    return this.requestClass(target, focus, data, 'POST');
+    return new this.requestClass(target, focus, data, 'POST');
   }
   /**
    *
@@ -130,7 +131,7 @@ export default class Api {
    * @returns {ApiRequest}
    */
   static put(target, focus, data = {}) {
-    return this.requestClass(target, focus, data, 'PUT');
+    return new this.requestClass(target, focus, data, 'PUT');
   }
 
   /**
@@ -142,7 +143,7 @@ export default class Api {
    * @return {ApiRequest}
    */
   static delete(target, focus, id, data = {}) {
-    return this.requestClass(target, focus, data, 'DELETE').addArg(id);
+    return new this.requestClass(target, focus, data, 'DELETE').addArg(id);
   }
 
   /**
@@ -150,33 +151,77 @@ export default class Api {
    * @param obj
    * @return {*}
    */
-  static makeRequest(obj) {
-    obj.xhrFields = {withCredentials: true};
+  static async makeRequest({url, method, data, params, headers, success = () => {}, error = () => {}})
+  {
+    try {
+      if (typeof headers === 'undefined') {
+        headers = {};
+      }
+      if (typeof params === 'undefined') {
+        params = {};
+      }
+      if (typeof data === 'undefined') {
+        data = {};
+      }
 
-    if (typeof obj["data"] === 'undefined') {
-      obj["data"] = {};
+      headers['Content-Type'] = 'application/json';
+
+      let api_token = localStorage.getItem('api_token');
+      if (api_token)
+      {
+        headers["Authorization"] = api_token;
+      }
+
+      let response;
+      switch (method)
+      {
+        case 'GET':
+          data.timestamp = new Date().getTime();
+
+          response = await axios.request({
+            url: url,
+            method: method,
+            params: data,
+            headers: headers
+          });
+          break;
+        default:
+          params.timestamp = new Date().getTime();
+
+          response = await axios.request({
+            url: url,
+            method: method,
+            data: data,
+            params: params,
+            headers: headers
+          });
+          break;
+      }
+
+
+      // get status code
+      const statusCode = response.status;
+
+      // get full response object
+      const xhr = response;
+
+      const responseData = response.data;
+
+      success(responseData, statusCode, xhr);
+
+      return responseData;
+    } catch(e) {
+      throw new Error(`API request to ${url} failed: ${e}`);
+
+      const xhr = e.response;
+
+      // status code
+      const statusCode = e.response.status;
+
+      // status text
+      const statusText = e.response.statusText;
+
+      error(xhr, statusCode, statusText);
     }
-    if (typeof obj["headers"] === 'undefined') {
-      obj["headers"] = {};
-    }
-
-
-    let api_token = localStorage.getItem('api_token');
-
-    if (api_token)
-    {
-      obj["headers"]["Authorization"] = api_token;
-    }
-
-    let one_time_token = localStorage.getItem('token');
-
-    if (one_time_token)
-    {
-      obj["data"]['token'] = one_time_token;
-    }
-
-    // obj["data"]['debug'] = true;
-
-    return $.ajax(obj)
   }
 }

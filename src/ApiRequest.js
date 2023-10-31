@@ -1,6 +1,6 @@
+import Api from "./Api";
 import Builder from "./Builder";
 import Binding from "./Binding";
-import Api from "./Api";
 
 /**
  *
@@ -12,11 +12,6 @@ export default class ApiRequest {
    */
   url = '';
 
-  /**
-   *
-   * @type {XMLHttpRequest|null}
-   */
-  xhr = null;
 
   /**
    *
@@ -154,10 +149,17 @@ export default class ApiRequest {
    */
   call(successCallback = (r) => {
   }, errorCallback = () => {
-  }, params = {}, dataKey = 'data', argumentsKey = 'arguments', queryKey = 'query') {
+  }, params = {}, dataKey = 'data', argumentsKey = 'arguments', queryKey = 'query', byUrl = false) {
     let self = this;
     this.callSuccess = successCallback;
     this.callError = errorCallback;
+
+    let url = this.domain + '/api/v1/call/' + this.target + '/' + this.focus;
+
+    if(byUrl)
+    {
+      url = this.url;
+    }
 
     let notify = null;
 
@@ -180,13 +182,11 @@ export default class ApiRequest {
       data = this.data;
     }
 
-
-    this.xhr = Api.makeRequest({
-      url: this.domain + '/api/v1/call/' + this.target + '/' + this.focus,
+    Api.makeRequest({
+      url: url,
       method: this.method,
       data: data,
-      ...params,
-      dataType: "json",
+      params: params,
       success: (response, status, xhr) => {
         if(response && response.result === 'success')
         {
@@ -212,6 +212,14 @@ export default class ApiRequest {
     return this;
   }
 
+  /**
+   *
+   * @param notify
+   * @param errorCallback
+   * @param xhr
+   * @param status
+   * @param errorText
+   */
   handleError(notify, errorCallback, xhr, status, errorText)
   {
     if (xhr.readyState === 4) {
@@ -266,63 +274,33 @@ export default class ApiRequest {
     errorCallback(xhr);
   }
 
+  /**
+   *
+   * @param successCallback
+   * @param errorCallback
+   * @return {ApiRequest}
+   */
   callSync(successCallback = (r) => {
   }, errorCallback = () => {
   }) {
     return this.call(successCallback, errorCallback, {async: false});
   }
 
+  /**
+   *
+   * @param successCallback
+   * @param errorCallback
+   * @param params
+   * @param dataKey
+   * @param argumentsKey
+   * @param queryKey
+   * @return {ApiRequest}
+   */
   callUrl(successCallback = (r) => {
   }, errorCallback = () => {
   }, params = {}, dataKey = 'data', argumentsKey = 'arguments', queryKey = 'query')
   {
-    let self = this;
-    this.callSuccess = successCallback;
-    this.callError = errorCallback;
-
-    let data = {};
-
-    if(argumentsKey)
-    {
-      data[argumentsKey] = this.arguments;
-    }
-
-    if(queryKey)
-    {
-      data[queryKey] = this.builder.toArray();
-    }
-
-    if(dataKey)
-    {
-      data[dataKey] = this.data;
-    }else{
-      data = this.data;
-    }
-
-    let notify = null;
-    Api.makeRequest({
-      url: this.url,
-      method: this.method,
-      data: data,
-      ...params,
-      success: (response, status, xhr) => {
-        if(response && response.result === 'success')
-        {
-          if (response.meta && response.meta.text)
-          {
-            notify = this.notify ? this.getNotifyManager().info('Успешно', response.meta.text) : null
-          }
-          self.toBind(response);
-          self.resetBindErrors();
-          successCallback(response, status, xhr);
-        }
-      },
-      error: (xhr, status, errorText) => {
-        this.handleError(notify, errorCallback, xhr, status, errorText);
-      }
-    });
-
-    return this;
+    return this.call(successCallback, errorCallback, params, dataKey, argumentsKey, queryKey, true)
   }
 
   /**
