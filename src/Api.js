@@ -211,9 +211,17 @@ export default class Api {
 
       return responseData;
     } catch(e) {
-      throw new Error(`API request to ${url} failed: ${e}`);
+      console.error(`API request to ${url} failed: ${e}`);
 
-      const xhr = e.response;
+      const xhr = e.request;
+
+      //написано для обратной совместимости после перехода с jquery
+      try{
+        xhr.responseJSON = e.response.data;
+      }catch (errorJson){
+        console.log(errorJson)
+      }
+
 
       // status code
       const statusCode = e.response.status;
