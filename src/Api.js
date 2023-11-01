@@ -203,11 +203,15 @@ export default class Api {
       const statusCode = response.status;
 
       // get full response object
-      const xhr = response;
+      const xhr = response.request;
 
       const responseData = response.data;
 
-      success(responseData, statusCode, xhr);
+      try {
+        success(responseData, statusCode, xhr);
+      }catch (error){
+        console.error(error);
+      }
 
       return responseData;
     } catch(e) {
@@ -222,14 +226,17 @@ export default class Api {
         console.log(errorJson)
       }
 
-
       // status code
-      const statusCode = e.response.status;
+      const statusCode = e.response?.status;
 
       // status text
-      const statusText = e.response.statusText;
+      const statusText = e.response?.statusText;
 
-      error(xhr, statusCode, statusText);
+      try {
+        error(xhr, statusCode, statusText);
+      }catch (error){
+        console.error(error);
+      }
     }
   }
 }
