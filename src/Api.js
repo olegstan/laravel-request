@@ -227,10 +227,15 @@ export default class Api {
       }
 
       // status code
-      const statusCode = e.response?.status;
+      let statusCode = e.request?.status;
 
       // status text
-      const statusText = e.response?.statusText;
+      let statusText = e.request?.statusText;
+
+      if(!statusText)
+      {
+        statusText = e.message;
+      }
 
       try {
         error(xhr, statusCode, statusText);
