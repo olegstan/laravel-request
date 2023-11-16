@@ -196,7 +196,13 @@ export default class ApiRequest {
 
             if(result)
             {
-              notify = this.getNotifyManager().info('Успешно', response.meta.text)
+              if(response?.meta.text)
+              {
+                notify = this.getNotifyManager().info('Успешно', response.meta.text);
+              }else if(response?.meta.message)
+              {
+                notify = this.getNotifyManager().info('Успешно', response.meta.message);
+              }
             }
           }
           self.toBind(response);
@@ -205,7 +211,7 @@ export default class ApiRequest {
         }
       },
       error: (xhr, status, errorText) => {
-        this.handleError(notify, errorCallback, xhr, status, errorText);
+        this.handleError(notify, errorCallback, xhr, errorText);
       }
     });
 
@@ -217,11 +223,14 @@ export default class ApiRequest {
    * @param notify
    * @param errorCallback
    * @param xhr
-   * @param status
    * @param errorText
    */
-  handleError(notify, errorCallback, xhr, status, errorText)
+  handleError(notify, errorCallback, xhr, errorText)
   {
+    console.log('------------')
+    console.log(xhr)
+    console.log(errorText)
+
     if (xhr.readyState === 4) {
       try {
         let result = this.notifyCallback(xhr.status);
@@ -230,7 +239,13 @@ export default class ApiRequest {
         {
           switch (xhr.status) {
             case 0://точно ошибка
-              notify = this.getNotifyManager().error('Ошибка', errorText);
+              if(errorText === 'Request aborted')
+              {
+                notify = this.getNotifyManager().errorOnce('request_aborted', 'Ошибка', errorText);
+              }else{
+                notify = this.getNotifyManager().error('Ошибка', errorText);
+              }
+
               break;
             case 404:
 
@@ -255,7 +270,12 @@ export default class ApiRequest {
         }
       } catch (e) {
         console.error(e);
-        notify = this.notify ? this.getNotifyManager().error('Ошибка') : null;
+        if(e?.message && typeof e.message === 'string')
+        {
+          notify = this.notify ? this.getNotifyManager().error('Ошибка', e.message) : null;
+        }else{
+          notify = this.notify ? this.getNotifyManager().error('Ошибка') : null;
+        }
       }
     }
     else if (xhr.readyState === 0) {
