@@ -33,20 +33,9 @@ export default class Builder {
         'owner',
         'whereAbs',
 
-        'whereAccount',
         'whereDate',
         'whereYear',
         'whereMonth',
-
-        'whereIncomeType',
-        'whereSalaryType',
-        'whereSpendingType',
-        'whereObligationType',
-        'wherePropertyType',
-        'whereInvestType',
-        'whereCurrencyType',
-        'whereAccountType',
-        'whereInsuranceType'
     ];
 
     constructor() {
