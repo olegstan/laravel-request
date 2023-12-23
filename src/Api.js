@@ -151,19 +151,9 @@ export default class Api {
    * @param obj
    * @return {*}
    */
-  static async makeRequest({url, method, data, params, headers, success = () => {}, error = () => {}})
+  static async makeRequest({url, method, data = {}, params = {}, headers = {}, success = () => {}, error = () => {}})
   {
     try {
-      if (typeof headers === 'undefined') {
-        headers = {};
-      }
-      if (typeof params === 'undefined') {
-        params = {};
-      }
-      if (typeof data === 'undefined') {
-        data = {};
-      }
-
       headers['Content-Type'] = 'application/json';
 
       let api_token = localStorage.getItem('api_token');
@@ -230,12 +220,7 @@ export default class Api {
       let statusCode = e.request?.status;
 
       // status text
-      let statusText = e.request?.statusText;
-
-      if(!statusText)
-      {
-        statusText = e.message;
-      }
+      let statusText = e.request?.statusText || e.message;
 
       try {
         error(xhr, statusCode, statusText);
