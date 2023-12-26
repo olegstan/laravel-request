@@ -56,11 +56,20 @@ export default class ApiRequest {
     });
   }
 
+  /**
+   *
+   * @return {null}
+   */
   getNotifyManager()
   {
     return ApiRequest.notifyClass;
   }
 
+  /**
+   *
+   * @param url
+   * @return {ApiRequest}
+   */
   setUrl(url)
   {
     this.url = url;
@@ -68,6 +77,11 @@ export default class ApiRequest {
     return this;
   }
 
+  /**
+   *
+   * @param domain
+   * @return {ApiRequest}
+   */
   setDomain(domain)
   {
     this.domain = domain;
@@ -145,6 +159,7 @@ export default class ApiRequest {
    * @param dataKey
    * @param argumentsKey
    * @param queryKey
+   * @param byUrl
    * @return {ApiRequest}
    */
   call(successCallback = (r) => {

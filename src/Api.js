@@ -11,63 +11,38 @@ export default class Api {
 
   /**
    *
-   * @param target
-   * @param focus
-   * @param data
-   * @param method
-   * @return {ApiRequest}
-   */
-  static create(target, focus, data = {}, method = 'GET') {
-    return new this.requestClass(target, focus, data, method);
-  }
-
-  /**
-   *
-   * @param target
-   * @param focus
-   * @param arg
-   * @param data
-   * @param method
-   * @return {ApiRequest}
-   */
-  static createArg(target, focus, arg, data = {}, method = 'GET') {
-    return new this.requestClass(target, focus, data, method).addArg(arg);
-  }
-
-  /**
-   *
-   * @param target
-   * @param focus
+   * @param controller
+   * @param action
    * @param arg
    * @param data
    * @return {ApiRequest}
    */
-  static getArg(target, focus, arg, data = {}) {
-    return this.get(target, focus, data).addArg(arg);
+  static getArg(controller, action, arg, data = {}) {
+    return this.get(controller, action, data).addArg(arg);
   }
 
   /**
    *
-   * @param target
-   * @param focus
+   * @param controller
+   * @param action
    * @param arg
    * @param data
    * @return {ApiRequest}
    */
-  static postArg(target, focus, arg, data = {}) {
-    return this.post(target, focus, data).addArg(arg);
+  static postArg(controller, action, arg, data = {}) {
+    return this.post(controller, action, data).addArg(arg);
   }
 
   /**
    *
-   * @param target
-   * @param focus
+   * @param controller
+   * @param action
    * @param arg
    * @param data
    * @return {ApiRequest}
    */
-  static putArg(target, focus, arg, data = {}) {
-    return this.put(target, focus, data).addArg(arg);
+  static putArg(controller, action, arg, data = {}) {
+    return this.put(controller, action, data).addArg(arg);
   }
 
   /**
@@ -105,45 +80,61 @@ export default class Api {
 
   /**
    *
-   * @param target
-   * @param focus
+   * @param controller
+   * @param action
    * @param data
    * @returns {ApiRequest}
    */
-  static get(target, focus, data = {}) {
-    return new this.requestClass(target, focus, data, 'GET');
+  static get(controller, action, data = {}) {
+    return new this.requestClass(controller, action, data, 'GET');
   }
   /**
    *
-   * @param target
-   * @param focus
+   * @param controller
+   * @param action
    * @param data
    * @returns {ApiRequest}
    */
-  static post(target, focus, data = {}) {
-    return new this.requestClass(target, focus, data, 'POST');
+  static post(controller, action, data = {}) {
+    return new this.requestClass(controller, action, data, 'POST');
   }
   /**
    *
-   * @param target
-   * @param focus
+   * @param controller
+   * @param action
    * @param data
    * @returns {ApiRequest}
    */
-  static put(target, focus, data = {}) {
-    return new this.requestClass(target, focus, data, 'PUT');
+  static put(controller, action, data = {}) {
+    return new this.requestClass(controller, action, data, 'PUT');
   }
 
   /**
    *
-   * @param target
-   * @param focus
+   * @param controller
+   * @param action
    * @param id
    * @param data
    * @return {ApiRequest}
    */
-  static delete(target, focus, id, data = {}) {
-    return new this.requestClass(target, focus, data, 'DELETE').addArg(id);
+  static delete(controller, action, id, data = {}) {
+    return new this.requestClass(controller, action, data, 'DELETE').addArg(id);
+  }
+
+  static encodeQueryString(params) {
+    const flattenObject = (obj, parentKey = '') => {
+      return Object.entries(obj).map(([key, value]) => {
+        const newKey = parentKey ? `${parentKey}[${key}]` : key;
+        if (typeof value === 'object' && value !== null) {
+          return flattenObject(value, newKey);
+        } else {
+          return `${encodeURIComponent(newKey)}=${encodeURIComponent(value)}`;
+        }
+      });
+    };
+
+    const flatParams = flattenObject(params);
+    return flatParams.join('&');
   }
 
   /**
@@ -166,14 +157,32 @@ export default class Api {
       switch (method)
       {
         case 'GET':
-          data.timestamp = new Date().getTime();
+          let query = Api.encodeQueryString(data);
 
-          response = await axios.request({
-            url: url,
-            method: method,
-            params: data,
-            headers: headers
-          });
+          if(query.length > 5000)
+          {
+            //replace to POST if GET url is too long
+            data._method = 'GET';
+
+            response = await axios.request({
+              url: url,
+              method: 'PUT',//post не будет работать
+              data: data,
+              headers: headers
+            });
+
+          }else{
+            data.timestamp = new Date().getTime();
+
+            response = await axios.request({
+              url: url,
+              method: method,
+              params: data,
+              headers: headers
+            });
+          }
+
+
           break;
         default:
           params.timestamp = new Date().getTime();
