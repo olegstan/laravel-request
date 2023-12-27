@@ -3,28 +3,32 @@ export default class Builder {
     static availableMethod = [
         'select',
         'where',
+        'orWhere',
         'whereDate',
+        'orWhereDate',
         'whereYear',
+        'orWhereYear',
         'whereMonth',
+        'orWhereMonth',
         'has',
         'whereIn',
+        'orWhereIn',
         'whereNotIn',
+        'orWhereNotIn',
         'whereHas',
         'orWhereHas',
         'whereHasMorph',
         'orWhereHasMorph',
         'whereDoesntHave',
         'orWhereDoesntHave',
-        'orWhere',
+
         'orderBy',
         'groupBy',
         'whereNull',
         'orWhereNull',
         'whereNotNull',
         'orWhereNotNull',
-        /**
-         *@property Builder.availableMethod.with array
-         */
+
         'with',
         'withCount',
         'offset',
@@ -32,10 +36,6 @@ export default class Builder {
         'distinct',
         'owner',
         'whereAbs',
-
-        'whereDate',
-        'whereYear',
-        'whereMonth',
     ];
 
     constructor() {

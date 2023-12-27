@@ -146,6 +146,21 @@ export default class ApiRequest {
     return this.call(successCallback, errorCallback);
   }
 
+  /**
+   *
+   * @param fields
+   * @param successCallback
+   * @param errorCallback
+   * @return {ApiRequest}
+   */
+  pluck(fields, successCallback = (r) => {
+  }, errorCallback = () => {
+  }) {
+    this.data['paginateType'] = 'pluck';
+    this.data['fields'] = fields;
+    return this.call(successCallback, errorCallback);
+  }
+
   getUrl()
   {
     return this.domain + '/api/v1/call/' + this.target + '/' + this.focus;
