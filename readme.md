@@ -1,3 +1,12 @@
+Install
+
+npm install laravel-request
+
+Connected package
+
+https://github.com/olegstan/laravel-rest
+
+
 Usage get data
 
 ```
@@ -8,12 +17,32 @@ Api.get('active-trade', 'index')
       .with('from_account', 'from_account.currency')
       .orderBy('trade_at', 'DESC')
       .all((response) => {
-        
+        //success
+      }, () => {
+        //error
       })
-      .bind(this, 'trades')
 }}     
 ```
-    
+  
+or
+
+```
+Api.get('active-trade', 'index')
+      .where('id', 115)
+      .with('currency')
+      .with('to_account', 'to_account.currency')
+      .with('from_account', 'from_account.currency')
+      .orderBy('trade_at', 'DESC')
+      .first((response) => {
+        //success
+        
+      }, () => {
+        //error
+      })
+}}
+```
+
+  
 You can use
 
 all or first or paginate
@@ -32,3 +61,12 @@ Api.post('active', 'store', {
         //error
       });
 ```
+
+response must be like below, for 200 status should contains key "result" with text "success"
+
+{
+    "meta": [],
+    "result": "success",
+    "data": [],
+}
+

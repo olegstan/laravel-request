@@ -21,13 +21,14 @@ export default class Builder {
         'orWhereHasMorph',
         'whereDoesntHave',
         'orWhereDoesntHave',
-
-        'orderBy',
-        'groupBy',
         'whereNull',
         'orWhereNull',
         'whereNotNull',
         'orWhereNotNull',
+
+
+        'orderBy',
+        'groupBy',
 
         'with',
         'withCount',
