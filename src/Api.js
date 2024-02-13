@@ -9,6 +9,11 @@ export default class Api {
    */
   static requestClass = ApiRequest;
 
+  static tokenResolver = () =>
+  {
+    return localStorage.getItem('api_token');
+  }
+
   /**
    *
    * @param controller
@@ -147,7 +152,7 @@ export default class Api {
     try {
       headers['Content-Type'] = 'application/json';
 
-      let api_token = localStorage.getItem('api_token');
+      let api_token = Api.tokenResolver();
       if (api_token)
       {
         headers["Authorization"] = api_token;
