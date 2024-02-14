@@ -9,7 +9,7 @@ export default class Api {
    */
   static requestClass = ApiRequest;
 
-  static tokenResolver = () =>
+  static tokenResolver = async () =>
   {
     return localStorage.getItem('api_token');
   }
@@ -152,7 +152,7 @@ export default class Api {
     try {
       headers['Content-Type'] = 'application/json';
 
-      let api_token = Api.tokenResolver();
+      let api_token = await Api.tokenResolver();
       if (api_token)
       {
         headers["Authorization"] = api_token;
