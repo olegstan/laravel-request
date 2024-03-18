@@ -7,8 +7,17 @@ export default class Api {
    *
    * @type {ApiRequest}
    */
+  static debug = false;
+  /**
+   *
+   * @type {ApiRequest}
+   */
   static requestClass = ApiRequest;
 
+  /**
+   *
+   * @return {Promise<string>}
+   */
   static tokenResolver = async () =>
   {
     return localStorage.getItem('api_token');
@@ -126,6 +135,11 @@ export default class Api {
     return new this.requestClass(controller, action, data, 'DELETE').addArg(id);
   }
 
+  /**
+   *
+   * @param params
+   * @return {*}
+   */
   static encodeQueryString(params) {
     const flattenObject = (obj, parentKey = '') => {
       return Object.entries(obj).map(([key, value]) => {
@@ -139,7 +153,24 @@ export default class Api {
     };
 
     const flatParams = flattenObject(params);
+
     return flatParams.join('&');
+  }
+
+  /**
+   *
+   * @param request
+   */
+  static logRequest(request)
+  {
+    if(Api.debug)
+    {
+      console.log('Url: ' + request.url)
+      console.log('Method: ' + request.method)
+      console.log('Data: ' + JSON.stringify(request.data ?? '').replace(/\"([^(\")"]+)\":/g,"$1:"))
+      console.log('Params: ' + JSON.stringify(request.params ?? '').replace(/\"([^(\")"]+)\":/g,"$1:"))
+      console.log('Headers: ' + JSON.stringify(request.headers ?? '').replace(/\"([^(\")"]+)\":/g,"$1:"))
+    }
   }
 
   /**
@@ -169,22 +200,29 @@ export default class Api {
             //replace to POST if GET url is too long
             data._method = 'GET';
 
-            response = await axios.request({
+            let request = {
               url: url,
               method: 'PUT',//post не будет работать
               data: data,
               headers: headers
-            });
+            }
+
+            Api.logRequest(request);
+            response = await axios.request(request);
 
           }else{
             data.timestamp = new Date().getTime();
 
-            response = await axios.request({
+            let request = {
               url: url,
               method: method,
               params: data,
               headers: headers
-            });
+            }
+
+            Api.logRequest(request);
+
+            response = await axios.request(request);
           }
 
 
@@ -192,13 +230,17 @@ export default class Api {
         default:
           params.timestamp = new Date().getTime();
 
-          response = await axios.request({
+          let request = {
             url: url,
             method: method,
             data: data,
             params: params,
             headers: headers
-          });
+          }
+
+          Api.logRequest(request);
+
+          response = await axios.request(request);
           break;
       }
 

@@ -33,6 +33,7 @@ export default class ApiRequest {
     this.focus = focus;
     this.method = method;
     this.data = data;
+    this.headers = [];
     this.arguments = [];
     this.builder = new Builder();
     this.notifyCallback = (status) => {return true};
