@@ -28,7 +28,7 @@ export default class ApiRequest {
    */
   constructor(target, focus, data = {}, method = 'GET') {
     let self = this;
-    this.domain = process.env.REACT_APP_API_URL;
+    this.domain = Api.domainResolver();
     this.target = target;
     this.focus = focus;
     this.method = method;

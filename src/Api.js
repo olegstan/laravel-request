@@ -25,6 +25,15 @@ export default class Api {
 
   /**
    *
+   * @return {string}
+   */
+  static domainResolver = () =>
+  {
+    return process.env.REACT_APP_API_URL;
+  }
+
+  /**
+   *
    * @param controller
    * @param action
    * @param arg
