@@ -239,7 +239,7 @@ declare module 'laravel-request' {
 
         groupBy(...args: any): Builder|ApiRequest;
 
-        with(...args: any|any): Builder|ApiRequest;
+        with(...args: any): Builder|ApiRequest;
 
         withCount(...args: any): Builder|ApiRequest;
 
