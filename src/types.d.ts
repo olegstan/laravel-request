@@ -146,7 +146,7 @@ declare module 'laravel-request' {
 
         static putUrl(url: string, data?: Record<string, any>): ApiRequest;
 
-        static get(controller: string, action: string, data?: Record<string, any>): ApiRequest;
+        static get(controller: string, action: string, data?: Record<string, any>): ApiRequest|Builder;
 
         static post(controller: string, action: string, data?: Record<string, any>): ApiRequest;
 
@@ -187,71 +187,71 @@ declare module 'laravel-request' {
         toArray(): Array<Record<string, any>>;
 
         // Define dynamic method signatures for available methods
-        select(...args: any[]): Builder;
+        select(...args: any): Builder|ApiRequest;
 
-        where(...args: any[]): Builder;
+        where(...args: any): Builder|ApiRequest;
 
-        orWhere(...args: any[]): Builder;
+        orWhere(...args: any): Builder|ApiRequest;
 
-        whereDate(...args: any[]): Builder;
+        whereDate(...args: any): Builder|ApiRequest;
 
-        orWhereDate(...args: any[]): Builder;
+        orWhereDate(...args: any): Builder|ApiRequest;
 
-        whereYear(...args: any[]): Builder;
+        whereYear(...args: any): Builder|ApiRequest;
 
-        orWhereYear(...args: any[]): Builder;
+        orWhereYear(...args: any): Builder|ApiRequest;
 
-        whereMonth(...args: any[]): Builder;
+        whereMonth(...args: any): Builder|ApiRequest;
 
-        orWhereMonth(...args: any[]): Builder;
+        orWhereMonth(...args: any): Builder|ApiRequest;
 
-        has(...args: any[]): Builder;
+        has(...args: any): Builder|ApiRequest;
 
-        whereIn(...args: any[]): Builder;
+        whereIn(...args: any): Builder|ApiRequest;
 
-        orWhereIn(...args: any[]): Builder;
+        orWhereIn(...args: any): Builder|ApiRequest;
 
-        whereNotIn(...args: any[]): Builder;
+        whereNotIn(...args: any): Builder|ApiRequest;
 
-        orWhereNotIn(...args: any[]): Builder;
+        orWhereNotIn(...args: any): Builder|ApiRequest;
 
-        whereHas(...args: any[]): Builder;
+        whereHas(...args: any): Builder|ApiRequest;
 
-        orWhereHas(...args: any[]): Builder;
+        orWhereHas(...args: any): Builder|ApiRequest;
 
-        whereHasMorph(...args: any[]): Builder;
+        whereHasMorph(...args: any): Builder|ApiRequest;
 
-        orWhereHasMorph(...args: any[]): Builder;
+        orWhereHasMorph(...args: any): Builder|ApiRequest;
 
-        whereDoesntHave(...args: any[]): Builder;
+        whereDoesntHave(...args: any): Builder|ApiRequest;
 
-        orWhereDoesntHave(...args: any[]): Builder;
+        orWhereDoesntHave(...args: any): Builder|ApiRequest;
 
-        whereNull(...args: any[]): Builder;
+        whereNull(...args: any): Builder|ApiRequest;
 
-        orWhereNull(...args: any[]): Builder;
+        orWhereNull(...args: any): Builder|ApiRequest;
 
-        whereNotNull(...args: any[]): Builder;
+        whereNotNull(...args: any): Builder|ApiRequest;
 
-        orWhereNotNull(...args: any[]): Builder;
+        orWhereNotNull(...args: any): Builder|ApiRequest;
 
-        orderBy(...args: any[]): Builder;
+        orderBy(...args: any): Builder|ApiRequest;
 
-        groupBy(...args: any[]): Builder;
+        groupBy(...args: any): Builder|ApiRequest;
 
-        with(...args: any[]): Builder;
+        with(...args: any|any): Builder|ApiRequest;
 
-        withCount(...args: any[]): Builder;
+        withCount(...args: any): Builder|ApiRequest;
 
-        offset(...args: any[]): Builder;
+        offset(...args: any): Builder|ApiRequest;
 
-        limit(...args: any[]): Builder;
+        limit(...args: any): Builder|ApiRequest;
 
-        distinct(...args: any[]): Builder;
+        distinct(...args: any): Builder|ApiRequest;
 
-        owner(...args: any[]): Builder;
+        owner(...args: any): Builder|ApiRequest;
 
-        whereAbs(...args: any[]): Builder;
+        whereAbs(...args: any): Builder|ApiRequest;
     }
 
     interface Target {
