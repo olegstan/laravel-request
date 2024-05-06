@@ -114,7 +114,7 @@ export default class ApiRequest {
   }, errorCallback = () => {
   }) {
     this.data['paginateType'] = 'first';
-    return this.call(successCallback, errorCallback);
+    return this.executeRequest(successCallback, errorCallback);
   }
 
   /**
@@ -127,7 +127,7 @@ export default class ApiRequest {
   }, errorCallback = () => {
   }) {
     this.data['paginateType'] = 'all';
-    return this.call(successCallback, errorCallback);
+    return this.executeRequest(successCallback, errorCallback);
   }
 
   /**
@@ -144,7 +144,7 @@ export default class ApiRequest {
     this.data['paginateType'] = 'paginate';
     this.data['page'] = page;
     this.data['perPage'] = perPage;
-    return this.call(successCallback, errorCallback);
+    return this.executeRequest(successCallback, errorCallback);
   }
 
   /**
@@ -159,9 +159,13 @@ export default class ApiRequest {
   }) {
     this.data['paginateType'] = 'pluck';
     this.data['fields'] = fields;
-    return this.call(successCallback, errorCallback);
+    return this.executeRequest(successCallback, errorCallback);
   }
 
+  /**
+   *
+   * @return {string}
+   */
   getUrl()
   {
     return this.domain + '/api/v1/call/' + this.target + '/' + this.focus;
@@ -180,38 +184,122 @@ export default class ApiRequest {
    */
   call(successCallback = (r) => {
   }, errorCallback = () => {
-  }, params = {}, dataKey = 'data', argumentsKey = 'arguments', queryKey = 'query', byUrl = false) {
-    let self = this;
-    this.callSuccess = successCallback;
-    this.callError = errorCallback;
+  }, params = {}, dataKey = 'data', argumentsKey = 'arguments', queryKey = 'query', byUrl = false)
+  {
+    return this.executeRequest(successCallback, errorCallback, params, dataKey, argumentsKey, queryKey, byUrl)
+  }
 
-    let url = this.domain + '/api/v1/call/' + this.target + '/' + this.focus;
-
-    if(byUrl)
-    {
-      url = this.url;
-    }
-
-    let notify = null;
-
+  /**
+   * Constructs request data object based on provided keys
+   * @param dataKey
+   * @param argumentsKey
+   * @param queryKey
+   * @return {object} data object for request
+   */
+  constructRequestData(dataKey, argumentsKey, queryKey) {
     let data = {};
 
-    if(argumentsKey)
+    if (argumentsKey)
     {
       data[argumentsKey] = this.arguments;
     }
-
-    if(queryKey)
+    if (queryKey)
     {
       data[queryKey] = this.builder.toArray();
     }
 
-    if(dataKey)
+    if (dataKey)
     {
       data[dataKey] = this.data;
     }else{
       data = this.data;
     }
+
+    return data;
+  }
+
+  /**
+   * Generates error notification based on the xhr response
+   * @param xhr
+   * @param errorText
+   * @return {object|null} notification object
+   */
+  getErrorNotification(xhr, errorText) {
+    let notify = null;
+
+    if (xhr.readyState === 4) {
+      switch (xhr.status) {
+        case 0:
+          notify = this.getNotifyManager().error('Ошибка', errorText);
+          break;
+        case 404:
+          // handle 404 specifically if needed
+          break;
+        default:
+          notify = this.defaultErrorMessage(xhr, errorText);
+      }
+    } else if (xhr.readyState === 0) {
+      notify = this.getNotifyManager().errorOnce('network_error', 'Ошибка', ' (Network Error) или невозможность получения доступа к сети');
+    } else {
+      notify = this.getNotifyManager().error('Ошибка', errorText);
+    }
+
+    return notify;
+  }
+
+  /**
+   *
+   * @param xhr
+   * @param errorText
+   * @return {null}
+   */
+  defaultErrorMessage(xhr, errorText) {
+    let notify = null;
+
+    if (xhr?.responseJSON?.meta.text) {
+      notify = this.getNotifyManager().error('Ошибка', xhr.responseJSON.meta.text);
+    } else if (xhr?.responseJSON?.meta.message) {
+      notify = this.getNotifyManager().error('Ошибка', xhr.responseJSON.meta.message);
+    } else if (typeof errorText === 'string') {
+      notify = this.getNotifyManager().error('Ошибка', errorText);
+    } else if (errorText?.message) {
+      notify = this.getNotifyManager().error('Ошибка', errorText.message);
+    }
+
+    return notify;
+  }
+
+
+  /**
+   * Provides a fallback notification in case of an exception
+   * @param e
+   * @return {object|null} notification object
+   */
+  getErrorNotificationFallback(e) {
+    console.error(e);
+    if (e?.message) return this.getNotifyManager().error('Ошибка', e.message);
+    return this.getNotifyManager().error('Ошибка');
+  }
+
+  /**
+   * Function to handle the common request logic
+   * @param successCallback
+   * @param errorCallback
+   * @param params
+   * @param dataKey
+   * @param argumentsKey
+   * @param queryKey
+   * @param byUrl
+   * @return {ApiRequest}
+   */
+  executeRequest(successCallback, errorCallback, params = {}, dataKey = 'data', argumentsKey = 'arguments', queryKey = 'query', byUrl = false) {
+    let self = this;
+    this.callSuccess = successCallback;
+    this.callError = errorCallback;
+
+    let url = byUrl ? this.url : this.getUrl();
+    let notify = null;
+    let data = this.constructRequestData(dataKey, argumentsKey, queryKey);
 
     Api.makeRequest({
       url: url,
@@ -219,23 +307,8 @@ export default class ApiRequest {
       data: data,
       params: params,
       success: (response, status, xhr) => {
-        if(response && response.result === 'success')
-        {
-          if (response.meta && response.meta.text)
-          {
-            let result = this.notifyCallback(xhr.status);
-
-            if(result)
-            {
-              if(response?.meta.text)
-              {
-                notify = this.getNotifyManager().info('Успешно', response.meta.text);
-              }else if(response?.meta.message)
-              {
-                notify = this.getNotifyManager().info('Успешно', response.meta.message);
-              }
-            }
-          }
+        if (response && response.result === 'success') {
+          notify = this.handleSuccessNotification(response, xhr.status);
           self.toBind(response);
           self.resetBindErrors();
           successCallback(response, status, xhr);
@@ -250,6 +323,27 @@ export default class ApiRequest {
   }
 
   /**
+   * Handles the success notification
+   * @param response
+   * @param status
+   * @return {object|null} notification object
+   */
+  handleSuccessNotification(response, status) {
+    let notify = null;
+    let result = this.notifyCallback(status);
+
+    if (result) {
+      if (response?.meta.text) {
+        notify = this.getNotifyManager().info('Успешно', response.meta.text);
+      } else if (response?.meta.message) {
+        notify = this.getNotifyManager().info('Успешно', response.meta.message);
+      }
+    }
+
+    return notify;
+  }
+
+  /**
    *
    * @param notify
    * @param errorCallback
@@ -258,67 +352,15 @@ export default class ApiRequest {
    */
   handleError(notify, errorCallback, xhr, errorText)
   {
-    console.log('------------')
-    console.log(xhr)
-    console.log(errorText)
+    console.log('------------');
+    console.log(xhr);
+    console.log(errorText);
 
-    if (xhr.readyState === 4) {
-      try {
-        let result = this.notifyCallback(xhr.status);
-
-        if(result)
-        {
-          switch (xhr.status) {
-            case 0://точно ошибка
-              if(errorText === 'Request aborted')
-              {
-                notify = this.getNotifyManager().errorOnce('request_aborted', 'Ошибка', errorText);
-              }else{
-                notify = this.getNotifyManager().error('Ошибка', errorText);
-              }
-
-              break;
-            case 404:
-
-              break;
-            default:
-              if(xhr?.responseJSON?.meta.text)
-              {
-                notify = this.getNotifyManager().error('Ошибка', xhr.responseJSON.meta.text);
-              }else if(xhr?.responseJSON?.meta.message)
-              {
-                notify = this.getNotifyManager().error('Ошибка', xhr.responseJSON.meta.message);
-              }else{
-                if(typeof errorText === 'string')
-                {
-                  notify = this.getNotifyManager().error('Ошибка', errorText);
-                }else if(errorText?.message && typeof errorText.message === 'string'){
-                  notify = this.getNotifyManager().error('Ошибка', errorText.message);
-                }
-              }
-              break;
-          }
-        }
-      } catch (e) {
-        console.error(e);
-        if(e?.message && typeof e.message === 'string')
-        {
-          notify = this.notify ? this.getNotifyManager().error('Ошибка', e.message) : null;
-        }else{
-          notify = this.notify ? this.getNotifyManager().error('Ошибка') : null;
-        }
-      }
-    }
-    else if (xhr.readyState === 0) {
-      notify = this.getNotifyManager().errorOnce('network_error', 'Ошибка', ' (Network Error) или невозможность получения доступа к сети');
-    }
-    else {
-      if(typeof errorText === 'string')
-      {
-        notify = this.getNotifyManager().error('Ошибка', errorText);
-      }else if(errorText?.message && typeof errorText.message === 'string'){
-        notify = this.getNotifyManager().error('Ошибка', errorText.message);
-      }
+    try {
+      let result = this.notifyCallback(xhr.status);
+      if (result) notify = this.getErrorNotification(xhr, errorText);
+    } catch (e) {
+      notify = this.getErrorNotificationFallback(e);
     }
 
     this.toBindErrors(xhr);
@@ -334,7 +376,7 @@ export default class ApiRequest {
   callSync(successCallback = (r) => {
   }, errorCallback = () => {
   }) {
-    return this.call(successCallback, errorCallback, {async: false});
+    return this.executeRequest(successCallback, errorCallback, {async: false});
   }
 
   /**
@@ -351,7 +393,7 @@ export default class ApiRequest {
   }, errorCallback = () => {
   }, params = {}, dataKey = 'data', argumentsKey = 'arguments', queryKey = 'query')
   {
-    return this.call(successCallback, errorCallback, params, dataKey, argumentsKey, queryKey, true)
+    return this.executeRequest(successCallback, errorCallback, params, dataKey, argumentsKey, queryKey, true)
   }
 
   /**
@@ -398,12 +440,19 @@ export default class ApiRequest {
     }
   }
 
+  /**
+   *
+   */
   resetBindErrors() {
     if (this.responseBindingErrors !== null) {
       this.responseBindingErrors.fire({});
     }
   }
 
+  /**
+   *
+   * @param response
+   */
   toBindErrors(response = {})
   {
     if (this.responseBindingErrors !== null && 'responseJSON' in response && typeof response.responseJSON === 'object')
@@ -412,11 +461,23 @@ export default class ApiRequest {
     }
   }
 
+  /**
+   *
+   * @param obj
+   * @param item
+   * @param key
+   * @return {ApiRequest}
+   */
   withValidateForm(obj, item = 'formErrors', key = 'meta') {
     this.responseBindingErrors = new Binding(obj, item, key);
     return this;
   }
 
+  /**
+   *
+   * @param callback
+   * @return {ApiRequest}
+   */
   withoutNotify(callback)
   {
     //callback(status){} будем проверять статус и по условию если true не показывать уведомление
