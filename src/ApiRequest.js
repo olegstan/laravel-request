@@ -256,9 +256,9 @@ export default class ApiRequest {
   defaultErrorMessage(xhr, errorText) {
     let notify = null;
 
-    if (xhr?.responseJSON?.meta.text) {
+    if (xhr?.responseJSON?.meta?.text) {
       notify = this.getNotifyManager().error('Ошибка', xhr.responseJSON.meta.text);
-    } else if (xhr?.responseJSON?.meta.message) {
+    } else if (xhr?.responseJSON?.meta?.message) {
       notify = this.getNotifyManager().error('Ошибка', xhr.responseJSON.meta.message);
     } else if (typeof errorText === 'string') {
       notify = this.getNotifyManager().error('Ошибка', errorText);
@@ -333,9 +333,9 @@ export default class ApiRequest {
     let result = this.notifyCallback(status);
 
     if (result) {
-      if (response?.meta.text) {
+      if (response?.meta?.text) {
         notify = this.getNotifyManager().info('Успешно', response.meta.text);
-      } else if (response?.meta.message) {
+      } else if (response?.meta?.message) {
         notify = this.getNotifyManager().info('Успешно', response.meta.message);
       }
     }
