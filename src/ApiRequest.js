@@ -233,6 +233,7 @@ export default class ApiRequest {
           notify = this.getNotifyManager().error('Ошибка', errorText);
           break;
         case 404:
+          notify = this.getNotifyManager().error('Ошибка', 'Недостаточно прав или урл не найден. Попробуйте повторно авторизоваться.');
           // handle 404 specifically if needed
           break;
         default:
