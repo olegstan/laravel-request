@@ -202,54 +202,10 @@ export default class Api {
       switch (method)
       {
         case 'GET':
-          let query = Api.encodeQueryString(data);
-
-          if(query.length > 5000)
-          {
-            //replace to POST if GET url is too long
-            data._method = 'GET';
-
-            let request = {
-              url: url,
-              method: 'PUT',//post не будет работать
-              data: data,
-              headers: headers
-            }
-
-            Api.logRequest(request);
-            response = await axios.request(request);
-
-          }else{
-            data.timestamp = new Date().getTime();
-
-            let request = {
-              url: url,
-              method: method,
-              params: data,
-              headers: headers
-            }
-
-            Api.logRequest(request);
-
-            response = await axios.request(request);
-          }
-
-
+          response = await Api.handleGetRequest({ url, data, headers });
           break;
         default:
-          params.timestamp = new Date().getTime();
-
-          let request = {
-            url: url,
-            method: method,
-            data: data,
-            params: params,
-            headers: headers
-          }
-
-          Api.logRequest(request);
-
-          response = await axios.request(request);
+          response = await Api.handleDefaultRequest({ url, method, data, params, headers });
           break;
       }
 
@@ -293,5 +249,63 @@ export default class Api {
         console.error(error);
       }
     }
+  }
+
+  /**
+   *
+   * @param url
+   * @param data
+   * @param headers
+   * @return {Promise<AxiosResponse<any>>}
+   */
+  static async handleGetRequest({ url, data, headers }) {
+    let query = Api.encodeQueryString(data);
+    let response;
+
+    if (query.length > 5000) {
+      data._method = 'GET';
+      let request = {
+        url: url,
+        method: 'POST',
+        data: data,
+        headers: headers
+      };
+      Api.logRequest(request);
+      response = await axios.request(request);
+    } else {
+      data.timestamp = new Date().getTime();
+      let request = {
+        url: url,
+        method: 'GET',
+        params: data,
+        headers: headers
+      };
+      Api.logRequest(request);
+      response = await axios.request(request);
+    }
+
+    return response;
+  }
+
+  /**
+   *
+   * @param url
+   * @param method
+   * @param data
+   * @param params
+   * @param headers
+   * @return {Promise<AxiosResponse<any>>}
+   */
+  static async handleDefaultRequest({ url, method, data, params, headers }) {
+    params.timestamp = new Date().getTime();
+    let request = {
+      url: url,
+      method: method,
+      data: data,
+      params: params,
+      headers: headers
+    };
+    Api.logRequest(request);
+    return await axios.request(request);
   }
 }
