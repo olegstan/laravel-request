@@ -251,6 +251,15 @@ export default class Api {
     }
   }
 
+  static generateHash(length = 50) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let hash = '';
+    for (let i = 0; i < length; i++) {
+      hash += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return hash;
+  }
+
   /**
    *
    * @param url
@@ -261,6 +270,8 @@ export default class Api {
   static async handleGetRequest({ url, data, headers }) {
     let query = Api.encodeQueryString(data);
     let response;
+
+    data.unique_hash = Api.generateHash();
 
     if (query.length > 5000) {
       data._method = 'GET';
@@ -298,6 +309,9 @@ export default class Api {
    */
   static async handleDefaultRequest({ url, method, data, params, headers }) {
     params.timestamp = new Date().getTime();
+
+    params.unique_hash = Api.generateHash();
+
     let request = {
       url: url,
       method: method,
