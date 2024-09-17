@@ -279,7 +279,8 @@ export default class Api {
         url: url,
         method: 'POST',
         data: data,
-        headers: headers
+        headers: headers,
+        timeout: 0
       };
       Api.logRequest(request);
       response = await axios.request(request);
@@ -289,7 +290,8 @@ export default class Api {
         url: url,
         method: 'GET',
         params: data,
-        headers: headers
+        headers: headers,
+        timeout: 0
       };
       Api.logRequest(request);
       response = await axios.request(request);
@@ -317,7 +319,8 @@ export default class Api {
       method: method,
       data: data,
       params: params,
-      headers: headers
+      headers: headers,
+      timeout: 0,
     };
     Api.logRequest(request);
     return await axios.request(request);
