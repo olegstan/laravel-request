@@ -134,25 +134,25 @@ declare module 'laravel-request' {
         static tokenResolver: () => Promise<string | null>;
         static domainResolver: () => string;
 
-        static getArg(controller: string, action: string, arg: string, data?: Record<string, any>): ApiRequest;
+        static getArg(controller: string, action: string, arg: string, data?: Record<string, any>): ApiRequest|Builder;
 
-        static postArg(controller: string, action: string, arg: string, data?: Record<string, any>): ApiRequest;
+        static postArg(controller: string, action: string, arg: string, data?: Record<string, any>): ApiRequest|Builder;
 
-        static putArg(controller: string, action: string, arg: string, data?: Record<string, any>): ApiRequest;
+        static putArg(controller: string, action: string, arg: string, data?: Record<string, any>): ApiRequest|Builder;
 
-        static getUrl(url: string, data?: Record<string, any>): ApiRequest;
+        static getUrl(url: string, data?: Record<string, any>): ApiRequest|Builder;
 
-        static postUrl(url: string, data?: Record<string, any>): ApiRequest;
+        static postUrl(url: string, data?: Record<string, any>): ApiRequest|Builder;
 
-        static putUrl(url: string, data?: Record<string, any>): ApiRequest;
+        static putUrl(url: string, data?: Record<string, any>): ApiRequest|Builder;
 
         static get(controller: string, action: string, data?: Record<string, any>): ApiRequest|Builder;
 
-        static post(controller: string, action: string, data?: Record<string, any>): ApiRequest;
+        static post(controller: string, action: string, data?: Record<string, any>): ApiRequest|Builder;
 
-        static put(controller: string, action: string, data?: Record<string, any>): ApiRequest;
+        static put(controller: string, action: string, data?: Record<string, any>): ApiRequest|Builder;
 
-        static delete(controller: string, action: string, id: string, data?: Record<string, any>): ApiRequest;
+        static delete(controller: string, action: string, id: string, data?: Record<string, any>): ApiRequest|Builder;
 
         static encodeQueryString(params: Record<string, any>): string;
 

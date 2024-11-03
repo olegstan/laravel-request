@@ -6,6 +6,32 @@ Connected package
 
 https://github.com/olegstan/laravel-rest
 
+set domain resolver before any request
+
+```
+Api.domainResolver = () => {
+    try {
+        return Environment.get('REACT_APP_API_URL');
+    } catch (e) {
+        console.log(e)
+        return null;
+    }
+}
+```
+
+set auth token resolver before any request
+
+default token resolver, you can redefine it to any other
+```
+Api.tokenResolver = async () => {
+    try {
+        return await localStorage.getItem('api_token'); 
+    } catch (e) {
+        console.log(e)
+        return null;
+    }
+}
+```
 
 Usage get data
 
