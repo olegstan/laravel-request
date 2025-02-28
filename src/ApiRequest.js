@@ -238,7 +238,7 @@ export default class ApiRequest {
           // handle 404 specifically if needed
           break;
         default:
-          notify = this.defaultErrorMessage(response, errorText);
+          notify = this.defaultErrorMessage(responseData, errorText);
       }
     } else if (response.readyState === 0) {
       notify = this.getNotifyManager().errorOnce('network_error', 'Ошибка', ' (Network Error) или невозможность получения доступа к сети');
@@ -459,7 +459,7 @@ export default class ApiRequest {
    */
   toBindErrors(responseData = {})
   {
-    if (responseData && typeof responseData === 'object' && responseData?.meta?.errors)
+    if (this.responseBindingErrors && responseData && typeof responseData === 'object' && responseData?.meta?.errors)
     {
       this.responseBindingErrors.fire(responseData.meta.errors);
     }
