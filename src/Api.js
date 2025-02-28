@@ -1,5 +1,6 @@
 import ApiRequest from "./ApiRequest";
 import axios from "axios";
+import { decode } from '@msgpack/msgpack';
 
 export default class Api {
 
@@ -187,20 +188,18 @@ export default class Api {
    * @param obj
    * @return {*}
    */
-  static async makeRequest({url, method, data = {}, params = {}, headers = {}, success = () => {}, error = () => {}})
-  {
+  static async makeRequest({ url, method, data = {}, params = {}, headers = {}, success = () => {}, error = () => {} }) {
     try {
+      // Устанавливаем Content-Type по умолчанию
       headers['Content-Type'] = 'application/json';
 
       let api_token = await Api.tokenResolver();
-      if (api_token)
-      {
+      if (api_token) {
         headers["Authorization"] = api_token;
       }
 
       let response;
-      switch (method)
-      {
+      switch (method) {
         case 'GET':
           response = await Api.handleGetRequest({ url, data, headers });
           break;
@@ -209,43 +208,52 @@ export default class Api {
           break;
       }
 
-
-      // get status code
+      // Получаем статус код
       const statusCode = response.status;
 
-      // get full response object
+      // Получаем полный объект ответа
       const xhr = response.request;
 
-      const responseData = response.data;
+      // Определяем тип контента из заголовков
+      const contentType = response.headers['content-type'];
+
+      let responseData;
+      if (contentType && contentType.includes('application/msgpack')) {
+        // Если контент типа msgpack, декодируем его
+        responseData = decode(response.data);
+      } else {
+        // Иначе предполагаем JSON и парсим его
+        responseData = response.data;
+      }
 
       try {
         success(responseData, statusCode, xhr);
-      }catch (error){
+      } catch (error) {
         console.error(error);
       }
 
       return responseData;
-    } catch(e) {
+    } catch (e) {
       console.error(`API request to ${url} failed: ${e}`);
 
       const xhr = e.request;
 
-      //написано для обратной совместимости после перехода с jquery
-      try{
+      // Написано для обратной совместимости после перехода с jQuery
+      try {
         xhr.responseJSON = e.response.data;
-      }catch (errorJson){
-        console.log(errorJson)
+      } catch (errorJson) {
+        console.log(errorJson);
       }
 
-      // status code
+      // Статус код
       let statusCode = e.request?.status;
 
-      // status text
+      // Текст статуса
       let statusText = e.request?.statusText || e.message;
 
       try {
         error(xhr, statusCode, statusText);
-      }catch (error){
+      } catch (error) {
         console.error(error);
       }
     }
