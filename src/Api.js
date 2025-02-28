@@ -1,5 +1,6 @@
 import ApiRequest from "./ApiRequest";
 import axios from "axios";
+import { decode } from "@msgpack/msgpack";
 
 export default class Api {
 
@@ -182,6 +183,43 @@ export default class Api {
     }
   }
 
+  static async decodeResponse(response, contentType) {
+    try {
+      if (contentType.includes("application/msgpack")) {
+        // Декодирование MessagePack
+        const arrayBuffer = response.data;
+
+        if (!(arrayBuffer instanceof ArrayBuffer)) {
+          throw new TypeError("Expected response.data to be an ArrayBuffer for MessagePack");
+        }
+
+        return decode(arrayBuffer); // Предполагается, что decode — это функция для MessagePack
+      } else if (contentType.includes("application/json")) {
+        // Декодирование JSON
+        let jsonData;
+        if (response.data instanceof ArrayBuffer) {
+          // Преобразуем ArrayBuffer в строку
+          const decoder = new TextDecoder('utf-8');
+          jsonData = decoder.decode(response.data);
+        } else {
+          jsonData = response.data; // Предполагаем, что данные уже в виде строки
+        }
+
+        return JSON.parse(jsonData);
+      } else if (contentType.includes("text/plain")) {
+        // Возврат текстовых данных как строки
+        return response.data.toString();
+      } else {
+        // Неизвестный формат
+        console.warn(`Unsupported Content-Type: ${contentType}`);
+        return response.data; // Возвращаем данные "как есть"
+      }
+    } catch (error) {
+      console.error(`Failed to decode response with Content-Type: ${contentType}`, error);
+      throw error;
+    }
+  }
+
   /**
    *
    * @param obj
@@ -190,6 +228,7 @@ export default class Api {
   static async makeRequest({url, method, data = {}, params = {}, headers = {}, success = () => {}, error = () => {}})
   {
     try {
+      headers['Accept'] = 'application/json, application/msgpack, text/plain, */*';
       headers['Content-Type'] = 'application/json';
 
       let api_token = await Api.tokenResolver();
@@ -210,13 +249,21 @@ export default class Api {
       }
 
 
-      // get status code
-      const statusCode = response.status;
+      console.log(url)
+      console.log(response)
 
-      // get full response object
+      const contentType = response.headers.get("Content-Type");
+
+      if (!contentType) {
+        throw new Error("Missing Content-Type header in the response");
+      }
+
+      const responseData = await Api.decodeResponse(response, contentType);
+      const statusCode = response.status;
       const xhr = response.request;
 
-      const responseData = response.data;
+      console.log(url)
+      console.log(responseData)
 
       try {
         success(responseData, statusCode, xhr);
@@ -226,27 +273,33 @@ export default class Api {
 
       return responseData;
     } catch(e) {
-      console.error(`API request to ${url} failed: ${e}`);
+      if (axios.isAxiosError(e))
+      {
+        console.error(`API request to ${url} failed: ${e}`);
+        console.error(e);
 
-      const xhr = e.request;
+        const response = e.response;
+        const xhr = response.request;
 
-      //написано для обратной совместимости после перехода с jquery
-      try{
-        xhr.responseJSON = e.response.data;
-      }catch (errorJson){
-        console.log(errorJson)
-      }
+        const contentType = response.headers.get("Content-Type");
+        const responseData = await Api.decodeResponse(response, contentType);
 
-      // status code
-      let statusCode = e.request?.status;
+        const statusCode = response.status;
+        const statusText = response.statusText;
 
-      // status text
-      let statusText = e.request?.statusText || e.message;
+        try {
+          error(xhr, responseData, statusCode, statusText);
+        }catch (error){
+          console.error(error);
+        }
+      }else{
+        console.error(e)
 
-      try {
-        error(xhr, statusCode, statusText);
-      }catch (error){
-        console.error(error);
+        try {
+          error({}, {}, '', e.message);
+        }catch (error){
+          console.error(error);
+        }
       }
     }
   }
@@ -280,7 +333,8 @@ export default class Api {
         method: 'POST',
         data: data,
         headers: headers,
-        timeout: 0
+        timeout: 0,
+        responseType: 'arraybuffer'
       };
       Api.logRequest(request);
       response = await axios.request(request);
@@ -291,7 +345,8 @@ export default class Api {
         method: 'GET',
         params: data,
         headers: headers,
-        timeout: 0
+        timeout: 0,
+        responseType: 'arraybuffer'
       };
       Api.logRequest(request);
       response = await axios.request(request);
@@ -321,6 +376,7 @@ export default class Api {
       params: params,
       headers: headers,
       timeout: 0,
+      responseType: 'arraybuffer'
     };
     Api.logRequest(request);
     return await axios.request(request);

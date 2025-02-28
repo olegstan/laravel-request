@@ -220,15 +220,16 @@ export default class ApiRequest {
 
   /**
    * Generates error notification based on the xhr response
-   * @param xhr
+   * @param response
+   * @param responseData
    * @param errorText
    * @return {object|null} notification object
    */
-  getErrorNotification(xhr, errorText) {
+  getErrorNotification(response, responseData, errorText) {
     let notify = null;
 
-    if (xhr.readyState === 4) {
-      switch (xhr.status) {
+    if (response.readyState === 4) {
+      switch (response.status) {
         case 0:
           notify = this.getNotifyManager().error('Ошибка', errorText);
           break;
@@ -237,9 +238,9 @@ export default class ApiRequest {
           // handle 404 specifically if needed
           break;
         default:
-          notify = this.defaultErrorMessage(xhr, errorText);
+          notify = this.defaultErrorMessage(response, errorText);
       }
-    } else if (xhr.readyState === 0) {
+    } else if (response.readyState === 0) {
       notify = this.getNotifyManager().errorOnce('network_error', 'Ошибка', ' (Network Error) или невозможность получения доступа к сети');
     } else {
       notify = this.getNotifyManager().error('Ошибка', errorText);
@@ -250,17 +251,17 @@ export default class ApiRequest {
 
   /**
    *
-   * @param xhr
+   * @param responseData
    * @param errorText
    * @return {null}
    */
-  defaultErrorMessage(xhr, errorText) {
+  defaultErrorMessage(responseData, errorText) {
     let notify = null;
 
-    if (xhr?.responseJSON?.meta?.text) {
-      notify = this.getNotifyManager().error('Ошибка', xhr.responseJSON.meta.text);
-    } else if (xhr?.responseJSON?.meta?.message) {
-      notify = this.getNotifyManager().error('Ошибка', xhr.responseJSON.meta.message);
+    if (responseData?.meta?.text) {
+      notify = this.getNotifyManager().error('Ошибка', responseData?.meta.text);
+    } else if (responseData?.meta?.message) {
+      notify = this.getNotifyManager().error('Ошибка', responseData?.meta.message);
     } else if (typeof errorText === 'string') {
       notify = this.getNotifyManager().error('Ошибка', errorText);
     } else if (errorText?.message) {
@@ -315,8 +316,8 @@ export default class ApiRequest {
           successCallback(response, status, xhr);
         }
       },
-      error: (xhr, status, errorText) => {
-        this.handleError(notify, errorCallback, xhr, errorText);
+      error: (response, responseData, status, errorText) => {
+        this.handleError(notify, errorCallback, response, responseData, errorText);
       }
     });
 
@@ -346,26 +347,28 @@ export default class ApiRequest {
 
   /**
    *
+   *
    * @param notify
    * @param errorCallback
-   * @param xhr
+   * @param response
+   * @param responseData
    * @param errorText
    */
-  handleError(notify, errorCallback, xhr, errorText)
+  handleError(notify, errorCallback, response, responseData, errorText)
   {
     console.log('------------');
-    console.log(xhr);
+    console.log(responseData);
     console.log(errorText);
 
     try {
-      let result = this.notifyCallback(xhr.status);
-      if (result) notify = this.getErrorNotification(xhr, errorText);
+      let result = this.notifyCallback(response.status);
+      if (result) notify = this.getErrorNotification(response, responseData, errorText);
     } catch (e) {
       notify = this.getErrorNotificationFallback(e);
     }
 
-    this.toBindErrors(xhr);
-    errorCallback(xhr);
+    this.toBindErrors(responseData);
+    errorCallback(response);
   }
 
   /**
@@ -452,13 +455,13 @@ export default class ApiRequest {
 
   /**
    *
-   * @param response
+   * @param responseData
    */
-  toBindErrors(response = {})
+  toBindErrors(responseData = {})
   {
-    if (this.responseBindingErrors !== null && 'responseJSON' in response && typeof response.responseJSON === 'object')
+    if (responseData && typeof responseData === 'object' && responseData?.meta?.errors)
     {
-      this.responseBindingErrors.fire(response.responseJSON.meta.errors);
+      this.responseBindingErrors.fire(responseData.meta.errors);
     }
   }
 
