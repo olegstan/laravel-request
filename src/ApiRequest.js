@@ -459,9 +459,9 @@ export default class ApiRequest {
    */
   toBindErrors(responseData = {})
   {
-    if (this.responseBindingErrors && responseData && typeof responseData === 'object' && responseData?.meta?.errors)
+    if (this?.responseBindingErrors && responseData && typeof responseData === 'object' && responseData?.meta?.errors)
     {
-      this.responseBindingErrors.fire(responseData.meta.errors);
+      this.responseBindingErrors?.fire(responseData.meta.errors);
     }
   }
 
