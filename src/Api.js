@@ -35,6 +35,15 @@ export default class Api {
 
   /**
    *
+   * @return {string}
+   */
+  static envResolver = () =>
+  {
+    return process.env.REACT_APP_ENV;
+  }
+
+  /**
+   *
    * @param controller
    * @param action
    * @param arg
@@ -193,7 +202,15 @@ export default class Api {
           throw new TypeError("Expected response.data to be an ArrayBuffer for MessagePack");
         }
 
-        return decode(arrayBuffer); // Предполагается, что decode — это функция для MessagePack
+        const data = decode(arrayBuffer);
+
+        if(this.envResolver() === 'local')
+        {
+          console.log(url)
+          console.log(data)
+        }
+
+        return decode(data); // Предполагается, что decode — это функция для MessagePack
       } else if (contentType.includes("application/json")) {
         // Декодирование JSON
         let jsonData;
@@ -248,10 +265,6 @@ export default class Api {
           break;
       }
 
-
-      console.log(url)
-      console.log(response)
-
       const contentType = response.headers.get("Content-Type");
 
       if (!contentType) {
@@ -262,8 +275,6 @@ export default class Api {
       const statusCode = response.status;
       const xhr = response.request;
 
-      console.log(url)
-      console.log(responseData)
 
       try {
         success(responseData, statusCode, xhr);
