@@ -210,7 +210,7 @@ export default class Api {
           console.log(data)
         }
 
-        return decode(data); // Предполагается, что decode — это функция для MessagePack
+        return data; // Предполагается, что decode — это функция для MessagePack
       } else if (contentType.includes("application/json")) {
         // Декодирование JSON
         let jsonData;
