@@ -192,7 +192,14 @@ export default class Api {
     }
   }
 
-  static async decodeResponse(response, contentType) {
+  /**
+   *
+   * @param url
+   * @param response
+   * @param contentType
+   * @returns {Promise<*|string>}
+   */
+  static async decodeResponse(url, response, contentType) {
     try {
       if (contentType.includes("application/msgpack")) {
         // Декодирование MessagePack
@@ -271,7 +278,7 @@ export default class Api {
         throw new Error("Missing Content-Type header in the response");
       }
 
-      const responseData = await Api.decodeResponse(response, contentType);
+      const responseData = await Api.decodeResponse(url, response, contentType);
       const statusCode = response.status;
       const xhr = response.request;
 
@@ -293,7 +300,7 @@ export default class Api {
         const xhr = response.request;
 
         const contentType = response.headers.get("Content-Type");
-        const responseData = await Api.decodeResponse(response, contentType);
+        const responseData = await Api.decodeResponse(url, response, contentType);
 
         const statusCode = response.status;
         const statusText = response.statusText;
