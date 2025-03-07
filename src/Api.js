@@ -37,9 +37,9 @@ export default class Api {
    *
    * @return {string}
    */
-  static envResolver = () =>
+  static isDebug = () =>
   {
-    return process.env.REACT_APP_ENV;
+    return process.env.REACT_APP_DEBUG === 'true';
   }
 
   /**
@@ -211,7 +211,7 @@ export default class Api {
 
         const data = decode(arrayBuffer);
 
-        if(this.envResolver() === 'local')
+        if(this.isDebug())
         {
           console.log(url)
           console.log(data)
