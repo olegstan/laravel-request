@@ -288,6 +288,11 @@ export default class Api {
     } catch(e) {
       if (axios.isAxiosError(e))
       {
+        if (e.code === 'ERR_CANCELED') {
+          console.warn(`Request to ${url} was canceled.`);
+          return; // Просто выходим из обработчика, не вызывая error()
+        }
+
         console.error(`API request to ${url} failed: ${e}`);
         console.error(e);
 

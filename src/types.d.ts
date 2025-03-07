@@ -1,8 +1,11 @@
 // Define an interface for the ApiRequest class
 
 declare module 'laravel-request' {
+    import * as axios from "axios/index";
+
     export class ApiRequest {
         url: string;
+        source: any;
         static notifyClass: any | null;
         domain: string;
         target: string;
@@ -46,6 +49,8 @@ declare module 'laravel-request' {
         ): ApiRequest;
 
         getUrl(): string;
+
+        getSource(): axios.CancelTokenSource|null;
 
         call(
             successCallback?: (r: any) => void,
