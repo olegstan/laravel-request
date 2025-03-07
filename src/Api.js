@@ -8,11 +8,6 @@ export default class Api {
    *
    * @type {ApiRequest}
    */
-  static debug = false;
-  /**
-   *
-   * @type {ApiRequest}
-   */
   static requestClass = ApiRequest;
 
   /**
@@ -182,7 +177,7 @@ export default class Api {
    */
   static logRequest(request)
   {
-    if(Api.debug)
+    if(this.isDebug())
     {
       console.log('Url: ' + request.url)
       console.log('Method: ' + request.method)
@@ -249,7 +244,7 @@ export default class Api {
    * @param obj
    * @return {*}
    */
-  static async makeRequest({url, method, data = {}, params = {}, headers = {}, success = () => {}, error = () => {}})
+  static async makeRequest({url, method, data = {}, params = {}, source, headers = {}, success = () => {}, error = () => {}})
   {
     try {
       headers['Accept'] = 'application/json, application/msgpack, text/plain, */*';
@@ -265,10 +260,10 @@ export default class Api {
       switch (method)
       {
         case 'GET':
-          response = await Api.handleGetRequest({ url, data, headers });
+          response = await Api.handleGetRequest({ url, data, headers, source });
           break;
         default:
-          response = await Api.handleDefaultRequest({ url, method, data, params, headers });
+          response = await Api.handleDefaultRequest({ url, method, data, params, headers, source });
           break;
       }
 
@@ -349,9 +344,10 @@ export default class Api {
    * @param url
    * @param data
    * @param headers
+   * @param source
    * @return {Promise<AxiosResponse<any>>}
    */
-  static async handleGetRequest({ url, data, headers }) {
+  static async handleGetRequest({ url, data, headers, source }) {
     let query = Api.encodeQueryString(data);
     let response;
 
@@ -365,7 +361,8 @@ export default class Api {
         data: data,
         headers: headers,
         timeout: 0,
-        responseType: 'arraybuffer'
+        responseType: 'arraybuffer',
+        cancelToken: source?.token
       };
       Api.logRequest(request);
       response = await axios.request(request);
@@ -377,7 +374,8 @@ export default class Api {
         params: data,
         headers: headers,
         timeout: 0,
-        responseType: 'arraybuffer'
+        responseType: 'arraybuffer',
+        cancelToken: source?.token
       };
       Api.logRequest(request);
       response = await axios.request(request);
@@ -393,9 +391,10 @@ export default class Api {
    * @param data
    * @param params
    * @param headers
+   * @param source
    * @return {Promise<AxiosResponse<any>>}
    */
-  static async handleDefaultRequest({ url, method, data, params, headers }) {
+  static async handleDefaultRequest({ url, method, data, params, headers, source }) {
     params.timestamp = new Date().getTime();
 
     params.unique_hash = Api.generateHash();
@@ -407,7 +406,8 @@ export default class Api {
       params: params,
       headers: headers,
       timeout: 0,
-      responseType: 'arraybuffer'
+      responseType: 'arraybuffer',
+      cancelToken: source?.token
     };
     Api.logRequest(request);
     return await axios.request(request);

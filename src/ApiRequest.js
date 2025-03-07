@@ -1,6 +1,7 @@
 import Api from "./Api";
 import Builder from "./Builder";
 import Binding from "./Binding";
+import axios from "axios";
 
 /**
  *
@@ -46,6 +47,7 @@ export default class ApiRequest {
     this.callError = () => {
 
     };
+    this.source = null;
 
     Builder.availableMethod.map(function (val) {
       self[val] = function () {
@@ -169,6 +171,16 @@ export default class ApiRequest {
   getUrl()
   {
     return this.domain + '/api/v1/call/' + this.target + '/' + this.focus;
+  }
+
+  /**
+   * вернет токен для отмены запроса
+   *
+   * @returns {null}
+   */
+  getSource()
+  {
+    return this.source;
   }
 
   /**
@@ -298,6 +310,7 @@ export default class ApiRequest {
     let self = this;
     this.callSuccess = successCallback;
     this.callError = errorCallback;
+    this.source = axios.CancelToken.source();
 
     let url = byUrl ? this.url : this.getUrl();
     let notify = null;
@@ -308,6 +321,7 @@ export default class ApiRequest {
       method: this.method,
       data: data,
       params: params,
+      source: this.source,
       success: (response, status, xhr) => {
         if (response && response.result === 'success') {
           notify = this.handleSuccessNotification(response, xhr.status);
