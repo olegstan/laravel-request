@@ -297,18 +297,31 @@ export default class Api {
         console.error(e);
 
         const response = e.response;
-        const xhr = response.request;
 
-        const contentType = response.headers.get("Content-Type");
-        const responseData = await Api.decodeResponse(url, response, contentType);
+        //если прервали запрос или проблему с соединение то response может не быть
+        if(response)
+        {
+          const xhr = response.request;
 
-        const statusCode = response.status;
-        const statusText = response.statusText;
+          const contentType = response.headers.get("Content-Type");
+          const responseData = await Api.decodeResponse(url, response, contentType);
 
-        try {
-          error(xhr, responseData, statusCode, statusText);
-        }catch (error){
-          console.error(error);
+          const statusCode = response.status;
+          const statusText = response.statusText;
+
+          try {
+            error(xhr, responseData, statusCode, statusText);
+          }catch (error){
+            console.error(error);
+          }
+        }else{
+          console.error(e)
+
+          try {
+            error({}, {}, '', e.message);
+          }catch (error){
+            console.error(error);
+          }
         }
       }else{
         console.error(e)
