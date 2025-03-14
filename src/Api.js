@@ -244,7 +244,17 @@ export default class Api {
    * @param obj
    * @return {*}
    */
-  static async makeRequest({url, method, data = {}, params = {}, source, headers = {}, success = () => {}, error = () => {}})
+  static async makeRequest({
+       url,
+       method,
+       data = {},
+       params = {},
+       source,
+       headers = {},
+       success = () => {},
+       error = () => {},
+       final = () => {}
+  })
   {
     try {
       headers['Accept'] = 'application/json, application/msgpack, text/plain, */*';
@@ -283,6 +293,8 @@ export default class Api {
       }catch (error){
         console.error(error);
       }
+
+      final();
 
       return responseData;
     } catch(e) {
@@ -332,6 +344,8 @@ export default class Api {
           console.error(error);
         }
       }
+
+      final();
     }
   }
 

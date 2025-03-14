@@ -96,3 +96,16 @@ response must be like below, for 200 status should contains key "result" with te
     "data": [],
 }
 
+you can cancel request by
+
+```
+
+let cancelTokenSource = Api.get('active', SearchAllTypesHelper.ALL_TYPES, {
+            item_search: searchQuery,
+            user_id: clientId,
+            search_stock: 1
+        }).call(({data}) => {}, () => {}).getSource()
+        
+cancelTokenSource.cancel();
+        
+```

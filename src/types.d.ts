@@ -31,21 +31,31 @@ declare module 'laravel-request' {
 
         addArg(arg: any | any[]): ApiRequest;
 
-        first(successCallback?: (r: any) => void, errorCallback?: () => void): any;
+        first(
+            successCallback?: (response: {data: any, result: string, meta?: any, }) => void,
+            errorCallback?: (xhr: XMLHttpRequest, responseData: any) => void,
+            finalCallback?: () => void,
+        ): any;
 
-        all(successCallback?: (r: any) => void, errorCallback?: () => void): any;
+        all(
+            successCallback?: (response: {data: any, result: string, meta?: any}) => void,
+            errorCallback?: (xhr: XMLHttpRequest, responseData: any) => void,
+            finalCallback?: () => void,
+        ): any;
 
         paginate(
             page?: number,
             perPage?: number,
-            successCallback?: (r: any) => void,
-            errorCallback?: () => void
+            successCallback?: (response: {data: any, result: string, meta?: any}) => void,
+            errorCallback?: (xhr: XMLHttpRequest, responseData: any) => void,
+            finalCallback?: () => void,
         ): any;
 
         pluck(
             fields: any,
-            successCallback?: (r: any) => void,
-            errorCallback?: () => void
+            successCallback?: (response: {data: any, result: string, meta?: any}) => void,
+            errorCallback?: (xhr: XMLHttpRequest, responseData: any) => void,
+            finalCallback?: () => void,
         ): ApiRequest;
 
         getUrl(): string;
@@ -53,8 +63,9 @@ declare module 'laravel-request' {
         getSource(): axios.CancelTokenSource|null;
 
         call(
-            successCallback?: (r: any) => void,
-            errorCallback?: () => void,
+            successCallback?: (response: {data: any, result: string, meta?: any}) => void,
+            errorCallback?: (xhr: XMLHttpRequest, responseData: any) => void,
+            finalCallback?: () => void,
             params?: object,
             dataKey?: string,
             argumentsKey?: string,
@@ -63,13 +74,15 @@ declare module 'laravel-request' {
         ): ApiRequest;
 
         callSync(
-            successCallback?: (r: any) => void,
-            errorCallback?: () => void
+            successCallback?: (response: {data: any, result: string, meta?: any}) => void,
+            errorCallback?: (xhr: XMLHttpRequest, responseData: any) => void,
+            finalCallback?: () => void
         ): ApiRequest;
 
         callUrl(
-            successCallback?: (r: any) => void,
-            errorCallback?: () => void,
+            successCallback?: (response: {response: {data: any, result: string, meta?: any}}) => void,
+            errorCallback?: (xhr: XMLHttpRequest, responseData: any) => void,
+            finalCallback?: () => void,
             params?: object,
             dataKey?: string,
             argumentsKey?: string,
@@ -82,15 +95,20 @@ declare module 'laravel-request' {
             queryKey: string
         ): object;
 
-        getErrorNotification(xhr: XMLHttpRequest, errorText: string): object | null;
+        getErrorNotification(
+            xhr: XMLHttpRequest, errorText: string
+        ): object | null;
 
-        defaultErrorMessage(xhr: XMLHttpRequest, errorText: string): object | null;
+        defaultErrorMessage(
+            xhr: XMLHttpRequest, errorText: string
+        ): object | null;
 
         getErrorNotificationFallback(e: Error): object | null;
 
         executeRequest(
-            successCallback: (r: any) => void,
-            errorCallback: () => void,
+            successCallback: (response: {data: any, result: string, meta?: any}) => void,
+            errorCallback: (xhr: XMLHttpRequest, responseData: any) => void,
+            finalCallback?: () => void,
             params?: object,
             dataKey?: string,
             argumentsKey?: string,
@@ -105,7 +123,7 @@ declare module 'laravel-request' {
 
         handleError(
             notify: object | null,
-            errorCallback: (xhr: XMLHttpRequest) => void,
+            errorCallback: (xhr: XMLHttpRequest, responseData: any) => void,
             xhr: XMLHttpRequest,
             errorText: string
         ): void;

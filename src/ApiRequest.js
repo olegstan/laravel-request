@@ -47,6 +47,9 @@ export default class ApiRequest {
     this.callError = () => {
 
     };
+    this.callFinal = () => {
+
+    };
     this.source = null;
 
     Builder.availableMethod.map(function (val) {
@@ -110,26 +113,32 @@ export default class ApiRequest {
    *
    * @param successCallback
    * @param errorCallback
-   * @returns {*}
+   * @param finalCallback
+   * @returns {ApiRequest}
    */
-  first(successCallback = (r) => {
-  }, errorCallback = () => {
-  }) {
+  first(
+      successCallback = (response) => {},
+      errorCallback = () => {},
+      finalCallback = () => {}
+  ) {
     this.data['paginateType'] = 'first';
-    return this.executeRequest(successCallback, errorCallback);
+    return this.executeRequest(successCallback, errorCallback, finalCallback);
   }
 
   /**
    *
    * @param successCallback
    * @param errorCallback
-   * @returns {*}
+   * @param finalCallback
+   * @returns {ApiRequest}
    */
-  all(successCallback = (r) => {
-  }, errorCallback = () => {
-  }) {
+  all(
+      successCallback = (response) => {},
+      errorCallback = () => {},
+      finalCallback = () => {}
+  ) {
     this.data['paginateType'] = 'all';
-    return this.executeRequest(successCallback, errorCallback);
+    return this.executeRequest(successCallback, errorCallback, finalCallback);
   }
 
   /**
@@ -138,15 +147,20 @@ export default class ApiRequest {
    * @param perPage
    * @param successCallback
    * @param errorCallback
-   * @returns {*}
+   * @param finalCallback
+   * @returns {ApiRequest}
    */
-  paginate(page = 1, perPage = 10, successCallback = (r) => {
-  }, errorCallback = () => {
-  }) {
+  paginate(
+      page = 1,
+      perPage = 10,
+      successCallback = (response) => {},
+      errorCallback = () => {},
+      finalCallback = () => {}
+  ) {
     this.data['paginateType'] = 'paginate';
     this.data['page'] = page;
     this.data['perPage'] = perPage;
-    return this.executeRequest(successCallback, errorCallback);
+    return this.executeRequest(successCallback, errorCallback, finalCallback);
   }
 
   /**
@@ -154,14 +168,18 @@ export default class ApiRequest {
    * @param fields
    * @param successCallback
    * @param errorCallback
-   * @return {ApiRequest}
+   * @param finalCallback
+   * @returns {ApiRequest}
    */
-  pluck(fields, successCallback = (r) => {
-  }, errorCallback = () => {
-  }) {
+  pluck(
+      fields,
+      successCallback = (response) => {},
+      errorCallback = () => {},
+      finalCallback = () => {}
+  ) {
     this.data['paginateType'] = 'pluck';
     this.data['fields'] = fields;
-    return this.executeRequest(successCallback, errorCallback);
+    return this.executeRequest(successCallback, errorCallback, finalCallback);
   }
 
   /**
@@ -192,13 +210,21 @@ export default class ApiRequest {
    * @param argumentsKey
    * @param queryKey
    * @param byUrl
-   * @return {ApiRequest}
+   * @param finalCallback
+   * @returns {ApiRequest}
    */
-  call(successCallback = (r) => {
-  }, errorCallback = () => {
-  }, params = {}, dataKey = 'data', argumentsKey = 'arguments', queryKey = 'query', byUrl = false)
+  call(
+      successCallback = (response) => {},
+      errorCallback = () => {},
+      params = {},
+      dataKey = 'data',
+      argumentsKey = 'arguments',
+      queryKey = 'query',
+      byUrl = false,
+      finalCallback = () => {}
+  )
   {
-    return this.executeRequest(successCallback, errorCallback, params, dataKey, argumentsKey, queryKey, byUrl)
+    return this.executeRequest(successCallback, errorCallback, finalCallback, params, dataKey, argumentsKey, queryKey, byUrl)
   }
 
   /**
@@ -296,20 +322,31 @@ export default class ApiRequest {
   }
 
   /**
-   * Function to handle the common request logic
+   *
    * @param successCallback
    * @param errorCallback
+   * @param finalCallback
    * @param params
    * @param dataKey
    * @param argumentsKey
    * @param queryKey
    * @param byUrl
-   * @return {ApiRequest}
+   * @returns {ApiRequest}
    */
-  executeRequest(successCallback, errorCallback, params = {}, dataKey = 'data', argumentsKey = 'arguments', queryKey = 'query', byUrl = false) {
+  executeRequest(
+      successCallback,
+      errorCallback,
+      finalCallback,
+      params = {},
+      dataKey = 'data',
+      argumentsKey = 'arguments',
+      queryKey = 'query',
+      byUrl = false,
+  ) {
     let self = this;
     this.callSuccess = successCallback;
     this.callError = errorCallback;
+    this.callFinal = finalCallback;
     this.source = axios.CancelToken.source();
 
     let url = byUrl ? this.url : this.getUrl();
@@ -332,7 +369,8 @@ export default class ApiRequest {
       },
       error: (response, responseData, status, errorText) => {
         this.handleError(notify, errorCallback, response, responseData, errorText);
-      }
+      },
+      final: finalCallback
     });
 
     return this;
@@ -370,10 +408,6 @@ export default class ApiRequest {
    */
   handleError(notify, errorCallback, response, responseData, errorText)
   {
-    console.log('------------');
-    console.log(responseData);
-    console.log(errorText);
-
     try {
       let result = this.notifyCallback(response.status);
       if (result) notify = this.getErrorNotification(response, responseData, errorText);
@@ -389,12 +423,15 @@ export default class ApiRequest {
    *
    * @param successCallback
    * @param errorCallback
-   * @return {ApiRequest}
+   * @param finalCallback
+   * @returns {ApiRequest}
    */
-  callSync(successCallback = (r) => {
-  }, errorCallback = () => {
-  }) {
-    return this.executeRequest(successCallback, errorCallback, {async: false});
+  callSync(
+      successCallback = (response) => {},
+      errorCallback = () => {},
+      finalCallback = () => {}
+  ) {
+    return this.executeRequest(successCallback, errorCallback, finalCallback, {async: false});
   }
 
   /**
@@ -405,13 +442,20 @@ export default class ApiRequest {
    * @param dataKey
    * @param argumentsKey
    * @param queryKey
-   * @return {ApiRequest}
+   * @param finalCallback
+   * @returns {ApiRequest}
    */
-  callUrl(successCallback = (r) => {
-  }, errorCallback = () => {
-  }, params = {}, dataKey = 'data', argumentsKey = 'arguments', queryKey = 'query')
+  callUrl(
+      successCallback = (response) => {},
+      errorCallback = () => {},
+      params = {},
+      dataKey = 'data',
+      argumentsKey = 'arguments',
+      queryKey = 'query',
+      finalCallback = () => {}
+    )
   {
-    return this.executeRequest(successCallback, errorCallback, params, dataKey, argumentsKey, queryKey, true)
+    return this.executeRequest(successCallback, errorCallback, finalCallback, params, dataKey, argumentsKey, queryKey, true)
   }
 
   /**
