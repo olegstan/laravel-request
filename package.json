@@ -1,7 +1,7 @@
 {
   "name": "laravel-request",
   "productName": "laravel-request",
-  "version": "1.2.8",
+  "version": "1.2.9",
   "description": "laravel-request",
   "main": "src/index.js",
   "module": "src/index.js",

@@ -216,12 +216,12 @@ export default class ApiRequest {
   call(
       successCallback = (response) => {},
       errorCallback = () => {},
+      finalCallback = () => {},
       params = {},
       dataKey = 'data',
       argumentsKey = 'arguments',
       queryKey = 'query',
       byUrl = false,
-      finalCallback = () => {}
   )
   {
     return this.executeRequest(successCallback, errorCallback, finalCallback, params, dataKey, argumentsKey, queryKey, byUrl)
