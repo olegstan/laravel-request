@@ -12,6 +12,12 @@ export default class Api {
 
   /**
    *
+   * @type {string}
+   */
+  static responseType = 'arraybuffer';
+
+  /**
+   *
    * @return {Promise<string>}
    */
   static tokenResolver = async () =>
@@ -380,7 +386,7 @@ export default class Api {
         data: data,
         headers: headers,
         timeout: 0,
-        responseType: 'arraybuffer',
+        responseType: this.responseType,
         cancelToken: source?.token
       };
       Api.logRequest(request);
@@ -393,7 +399,7 @@ export default class Api {
         params: data,
         headers: headers,
         timeout: 0,
-        responseType: 'arraybuffer',
+        responseType: this.responseType,
         cancelToken: source?.token
       };
       Api.logRequest(request);
@@ -425,7 +431,7 @@ export default class Api {
       params: params,
       headers: headers,
       timeout: 0,
-      responseType: 'arraybuffer',
+      responseType: this.responseType,
       cancelToken: source?.token
     };
     Api.logRequest(request);
