@@ -347,7 +347,7 @@ export default class ApiRequest {
     this.callSuccess = successCallback;
     this.callError = errorCallback;
     this.callFinal = finalCallback;
-    this.source = axios.CancelToken.source();
+    this.source = Api.axiosResolver().CancelToken.source();
 
     let url = byUrl ? this.url : this.getUrl();
     let notify = null;

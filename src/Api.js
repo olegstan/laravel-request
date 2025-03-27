@@ -1,5 +1,6 @@
 import ApiRequest from "./ApiRequest";
 import axios from "axios";
+import MockAdapter from "axios-mock-adapter";
 import { decode } from "@msgpack/msgpack";
 
 export default class Api {
@@ -23,6 +24,15 @@ export default class Api {
   static tokenResolver = async () =>
   {
     return localStorage.getItem('api_token');
+  }
+
+  /**
+   *
+   * @returns {Promise<AxiosStatic | axios.AxiosStatic | axios>}
+   */
+  static axiosResolver = async () =>
+  {
+    return axios;
   }
 
   /**
@@ -390,7 +400,7 @@ export default class Api {
         cancelToken: source?.token
       };
       Api.logRequest(request);
-      response = await axios.request(request);
+      response = await Api.axiosResolver().request(request);
     } else {
       data.timestamp = new Date().getTime();
       let request = {
@@ -403,7 +413,7 @@ export default class Api {
         cancelToken: source?.token
       };
       Api.logRequest(request);
-      response = await axios.request(request);
+      response = await Api.axiosResolver().request(request);
     }
 
     return response;
@@ -435,6 +445,6 @@ export default class Api {
       cancelToken: source?.token
     };
     Api.logRequest(request);
-    return await axios.request(request);
+    return await Api.axiosResolver().request(request);
   }
 }
