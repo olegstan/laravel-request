@@ -240,7 +240,15 @@ export default class Api {
           jsonData = response.data; // Предполагаем, что данные уже в виде строки
         }
 
-        return JSON.parse(jsonData);
+        try {
+          return JSON.parse(jsonData);
+        }catch (error){
+
+          const enhancedError = new Error(`Ошибка при разборе JSON: ${error.message} - ${url}`);
+
+          // Выбрасываем улучшенную ошибку
+          throw enhancedError;
+        }
       } else if (contentType.includes("text/plain")) {
         // Возврат текстовых данных как строки
         return response.data.toString();
