@@ -1,10 +1,11 @@
 {
   "name": "laravel-request",
   "productName": "laravel-request",
-  "version": "1.2.13",
+  "version": "1.2.15",
   "description": "laravel-request",
   "main": "src/index.js",
   "module": "src/index.js",
+  "types": "@types/laravel-request.d.ts",
   "scripts": {},
   "keywords": [],
   "author": {
@@ -17,5 +18,9 @@
     "axios": "^1.8.4",
     "axios-mock-adapter": "^2.1.0",
     "query-string": "^8.1.0"
-  }
+  },
+  "files": [
+    "src",
+    "@types"
+  ]
 }
