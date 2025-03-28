@@ -5,5 +5,6 @@
 /// <reference path="./Binding.d.ts" />
 /// <reference path="./ApiProxy.d.ts" />
 /// <reference path="./UrlBind.d.ts" />
+/// <reference path="./BuilderMethodSignatures.d.ts" />
 
 export * from 'laravel-request';

@@ -1,6 +1,5 @@
 declare module 'laravel-request' {
-    export interface Builder extends BuilderMethodSignatures {}
-    export class Builder {
+    export class Builder extends BuilderMethodSignatures{
         static availableMethod: string[];
 
         query: Array<Record<string, any>>;

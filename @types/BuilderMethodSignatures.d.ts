@@ -9,7 +9,7 @@ declare module 'laravel-request' {
      * - в Builder методы будут возвращать Builder,
      * - в ApiRequest – ApiRequest.
      */
-    export interface BuilderMethodSignatures {
+    export class BuilderMethodSignatures {
         select(...args: any[]): this;
         where(...args: any[]): this;
         orWhere(...args: any[]): this;

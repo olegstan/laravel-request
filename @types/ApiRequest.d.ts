@@ -1,9 +1,9 @@
+
 declare module 'laravel-request' {
+    // @ts-ignore
     import * as axios from "axios/index";
 
-    export interface ApiRequest extends BuilderMethodSignatures {}
-
-    export class ApiRequest {
+    export class ApiRequest extends BuilderMethodSignatures{
         url: string;
         source: any;
         static notifyClass: any | null;
