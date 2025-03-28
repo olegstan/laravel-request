@@ -30,7 +30,7 @@ export default class Api {
    *
    * @returns {Promise<AxiosStatic | axios.AxiosStatic | axios>}
    */
-  static axiosResolver = async () =>
+  static axiosResolver = () =>
   {
     return axios;
   }
@@ -395,6 +395,7 @@ export default class Api {
     let response;
 
     data.unique_hash = Api.generateHash();
+    const axiosInstance = Api.axiosResolver();
 
     if (query.length > 5000) {
       data._method = 'GET';
@@ -408,7 +409,7 @@ export default class Api {
         cancelToken: source?.token
       };
       Api.logRequest(request);
-      response = await Api.axiosResolver().request(request);
+      response = await axiosInstance.request(request);
     } else {
       data.timestamp = new Date().getTime();
       let request = {
@@ -421,7 +422,7 @@ export default class Api {
         cancelToken: source?.token
       };
       Api.logRequest(request);
-      response = await Api.axiosResolver().request(request);
+      response = await axiosInstance.request(request);
     }
 
     return response;
@@ -441,6 +442,7 @@ export default class Api {
     params.timestamp = new Date().getTime();
 
     params.unique_hash = Api.generateHash();
+    const axiosInstance = Api.axiosResolver();
 
     let request = {
       url: url,
@@ -453,6 +455,6 @@ export default class Api {
       cancelToken: source?.token
     };
     Api.logRequest(request);
-    return await Api.axiosResolver().request(request);
+    return await axiosInstance.request(request);
   }
 }
