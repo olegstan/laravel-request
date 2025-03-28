@@ -59,7 +59,7 @@ export default class Api {
    * @param action
    * @param arg
    * @param data
-   * @return {ApiRequest|Builder}
+   * @return {ApiRequest}
    */
   static getArg(controller, action, arg, data = {}) {
     return this.get(controller, action, data).addArg(arg);
@@ -71,7 +71,7 @@ export default class Api {
    * @param action
    * @param arg
    * @param data
-   * @return {ApiRequest|Builder}
+   * @return {ApiRequest}
    */
   static postArg(controller, action, arg, data = {}) {
     return this.post(controller, action, data).addArg(arg);
@@ -83,7 +83,7 @@ export default class Api {
    * @param action
    * @param arg
    * @param data
-   * @return {ApiRequest|Builder}
+   * @return {ApiRequest}
    */
   static putArg(controller, action, arg, data = {}) {
     return this.put(controller, action, data).addArg(arg);
@@ -93,7 +93,7 @@ export default class Api {
    *
    * @param url
    * @param data
-   * @return {ApiRequest|Builder}
+   * @return {ApiRequest}
    */
   static getUrl(url, data = {})
   {
@@ -104,7 +104,7 @@ export default class Api {
    *
    * @param url
    * @param data
-   * @return {ApiRequest|Builder}
+   * @return {ApiRequest}
    */
   static postUrl(url, data = {})
   {
@@ -115,7 +115,7 @@ export default class Api {
    *
    * @param url
    * @param data
-   * @return {ApiRequest|Builder}
+   * @return {ApiRequest}
    */
   static putUrl(url, data = {})
   {
@@ -127,7 +127,7 @@ export default class Api {
    * @param controller
    * @param action
    * @param data
-   * @returns {ApiRequest|Builder}
+   * @returns {ApiRequest}
    */
   static get(controller, action, data = {}) {
     return new this.requestClass(controller, action, data, 'GET');
@@ -137,7 +137,7 @@ export default class Api {
    * @param controller
    * @param action
    * @param data
-   * @returns {ApiRequest|Builder}
+   * @returns {ApiRequest}
    */
   static post(controller, action, data = {}) {
     return new this.requestClass(controller, action, data, 'POST');
@@ -147,7 +147,7 @@ export default class Api {
    * @param controller
    * @param action
    * @param data
-   * @returns {ApiRequest|Builder}
+   * @returns {ApiRequest}
    */
   static put(controller, action, data = {}) {
     return new this.requestClass(controller, action, data, 'PUT');
@@ -159,7 +159,7 @@ export default class Api {
    * @param action
    * @param id
    * @param data
-   * @return {ApiRequest|Builder}
+   * @return {ApiRequest}
    */
   static delete(controller, action, id, data = {}) {
     return new this.requestClass(controller, action, data, 'DELETE').addArg(id);
