@@ -43,5 +43,6 @@ declare module 'laravel-request' {
         distinct(...args: any[]): this;
         owner(...args: any[]): this;
         whereAbs(...args: any[]): this;
+        contactsOrder(...args: any[]): this;
     }
 }

@@ -25,8 +25,6 @@ export default class Builder {
         'orWhereNull',
         'whereNotNull',
         'orWhereNotNull',
-
-
         'orderBy',
         'groupBy',
 
@@ -37,6 +35,7 @@ export default class Builder {
         'distinct',
         'owner',
         'whereAbs',
+        'contactsOrder',
     ];
 
     constructor() {
