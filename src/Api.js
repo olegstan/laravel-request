@@ -328,49 +328,7 @@ export default class Api {
           return; // Просто выходим из обработчика, не вызывая error()
         }
 
-        const errorInfo = {
-          message: e.message,
-          code: e.code,
-          name: e.name,
-          stack: e.stack,
-          config: {
-            url: e.config?.url,
-            method: e.config?.method,
-            headers: e.config?.headers,
-            data: e.config?.data,
-            params: e.config?.params,
-            timeout: e.config?.timeout,
-            baseURL: e.config?.baseURL
-          },
-          request: {
-            readyState: e.request?.readyState,
-            status: e.request?.status,
-            statusText: e.request?.statusText,
-            responseURL: e.request?.responseURL
-          },
-          response: e.response ? {
-            status: e.response.status,
-            statusText: e.response.statusText,
-            headers: e.response.headers,
-            data: e.response.data
-          } : null
-        };
-
-
-
-        console.error(`API request to ${url} failed:`, errorInfo);
-
-        // Дополнительная информация в зависимости от типа ошибки
-        if (e.code === 'ECONNABORTED') {
-          console.error('Request timeout occurred');
-        } else if (e.code === 'ERR_NETWORK') {
-          console.error('Network error occurred');
-        } else if (e.code === 'ERR_BAD_REQUEST') {
-          console.error('Bad request error');
-        } else if (e.code === 'ERR_BAD_RESPONSE') {
-          console.error('Bad response from server');
-        }
-
+        console.error(`API request to ${url} failed: ${e}`);
         console.error(e);
 
         const response = e.response;
@@ -386,49 +344,27 @@ export default class Api {
           const statusCode = response.status;
           const statusText = response.statusText;
 
-          console.error('Response details:', {
-            status: statusCode,
-            statusText: statusText,
-            headers: response.headers,
-            data: responseData,
-            url: response.config?.url
-          });
-
           try {
             error(xhr, responseData, statusCode, statusText);
           }catch (error){
-            console.error('Error in error callback:', error);
+            console.error(error);
           }
         }else{
-          console.error('No response received. Error details:', {
-            message: e.message,
-            code: e.code,
-            errno: e.errno,
-            syscall: e.syscall,
-            hostname: e.hostname,
-            port: e.port,
-            address: e.address
-          });
+          console.error(e)
 
           try {
             error({}, {}, '', e.message);
           }catch (error){
-            console.error('Error in error callback:', error);
+            console.error(error);
           }
         }
       }else{
-        console.error('Non-axios error occurred:', {
-          message: e.message,
-          name: e.name,
-          stack: e.stack,
-          url: url,
-          method: method
-        });
+        console.error(e)
 
         try {
           error({}, {}, '', e.message);
         }catch (error){
-          console.error('Error in error callback:', error);
+          console.error(error);
         }
       }
 
