@@ -206,9 +206,6 @@ export default class ApiRequest {
    * @param successCallback
    * @param errorCallback
    * @param params
-   * @param dataKey
-   * @param argumentsKey
-   * @param queryKey
    * @param byUrl
    * @param finalCallback
    * @returns {ApiRequest}
@@ -218,13 +215,10 @@ export default class ApiRequest {
       errorCallback = () => {},
       finalCallback = () => {},
       params = {},
-      dataKey = 'data',
-      argumentsKey = 'arguments',
-      queryKey = 'query',
       byUrl = false,
   )
   {
-    return this.executeRequest(successCallback, errorCallback, finalCallback, params, dataKey, argumentsKey, queryKey, byUrl)
+    return this.executeRequest(successCallback, errorCallback, finalCallback, params, byUrl)
   }
 
   /**
@@ -234,7 +228,11 @@ export default class ApiRequest {
    * @param queryKey
    * @return {object} data object for request
    */
-  constructRequestData(dataKey, argumentsKey, queryKey) {
+  constructRequestData(
+      dataKey = 'data',
+      argumentsKey = 'arguments',
+      queryKey = 'query',
+  ) {
     let data = {};
 
     if (argumentsKey)
@@ -327,9 +325,6 @@ export default class ApiRequest {
    * @param errorCallback
    * @param finalCallback
    * @param params
-   * @param dataKey
-   * @param argumentsKey
-   * @param queryKey
    * @param byUrl
    * @returns {ApiRequest}
    */
@@ -338,9 +333,6 @@ export default class ApiRequest {
       errorCallback,
       finalCallback,
       params = {},
-      dataKey = 'data',
-      argumentsKey = 'arguments',
-      queryKey = 'query',
       byUrl = false,
   ) {
     let self = this;
@@ -351,7 +343,7 @@ export default class ApiRequest {
 
     let url = byUrl ? this.url : this.getUrl();
     let notify = null;
-    let data = this.constructRequestData(dataKey, argumentsKey, queryKey);
+    let data = this.constructRequestData();
 
     Api.makeRequest({
       url: url,
@@ -439,9 +431,6 @@ export default class ApiRequest {
    * @param successCallback
    * @param errorCallback
    * @param params
-   * @param dataKey
-   * @param argumentsKey
-   * @param queryKey
    * @param finalCallback
    * @returns {ApiRequest}
    */
@@ -449,13 +438,10 @@ export default class ApiRequest {
       successCallback = (response) => {},
       errorCallback = () => {},
       params = {},
-      dataKey = 'data',
-      argumentsKey = 'arguments',
-      queryKey = 'query',
       finalCallback = () => {}
     )
   {
-    return this.executeRequest(successCallback, errorCallback, finalCallback, params, dataKey, argumentsKey, queryKey, true)
+    return this.executeRequest(successCallback, errorCallback, finalCallback, params, true)
   }
 
   /**
