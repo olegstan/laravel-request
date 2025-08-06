@@ -4,6 +4,7 @@ declare module 'laravel-request' {
         static requestClass: any;
         static tokenResolver: () => Promise<string | null>;
         static domainResolver: () => string;
+        static isDebug: () => string;
 
         static getArg(controller: string, action: string, arg: any, data?: Record<string, any>): ApiRequest;
 
