@@ -22,7 +22,10 @@ export default class Api {
    */
   static tokenResolver = async () =>
   {
-    return localStorage.getItem('api_token');
+    if(typeof window !== 'undefined' && typeof window.document !== 'undefined')
+    {
+      return window.localStorage.getItem('api_token');
+    }
   }
 
   /**
