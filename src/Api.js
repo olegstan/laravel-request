@@ -257,6 +257,7 @@ export default class Api {
       } else {
         // Неизвестный формат
         console.warn(`Unsupported Content-Type: ${contentType}`);
+        console.warn(response.data);
         return response.data; // Возвращаем данные "как есть"
       }
     } catch (error) {
