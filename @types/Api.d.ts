@@ -12,17 +12,23 @@ declare module 'laravel-request' {
 
         static putArg(controller: string, action: string, arg: any, data?: Record<string, any>): ApiRequest;
 
+        static patchArg(controller: string, action: string, arg: any, data?: Record<string, any>): ApiRequest;
+
         static getUrl(url: string, data?: Record<string, any>): ApiRequest;
 
         static postUrl(url: string, data?: Record<string, any>): ApiRequest;
 
         static putUrl(url: string, data?: Record<string, any>): ApiRequest;
 
+        static patchUrl(url: string, data?: Record<string, any>): ApiRequest;
+
         static get(controller: string, action: string, data?: Record<string, any>): ApiRequest;
 
         static post(controller: string, action: string, data?: Record<string, any>): ApiRequest;
 
         static put(controller: string, action: string, data?: Record<string, any>): ApiRequest;
+
+        static patch(controller: string, action: string, data?: Record<string, any>): ApiRequest;
 
         static delete(controller: string, action: string, id: any, data?: Record<string, any>): ApiRequest;
 

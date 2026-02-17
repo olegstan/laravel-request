@@ -93,6 +93,18 @@ export default class Api {
 
   /**
    *
+   * @param controller
+   * @param action
+   * @param arg
+   * @param data
+   * @return {ApiRequest}
+   */
+  static patchArg(controller, action, arg, data = {}) {
+    return this.patch(controller, action, data).addArg(arg);
+  }
+
+  /**
+   *
    * @param url
    * @param data
    * @return {ApiRequest}
@@ -126,6 +138,28 @@ export default class Api {
 
   /**
    *
+   * @param url
+   * @param data
+   * @return {ApiRequest}
+   */
+  static patchUrl(url, data = {})
+  {
+    return (new this.requestClass('', '', data, 'PATCH')).setUrl(url);
+  }
+
+  /**
+   *
+   * @param url
+   * @param data
+   * @return {ApiRequest}
+   */
+  static patchUrl(url, data = {})
+  {
+    return (new this.requestClass('', '', data, 'PATCH')).setUrl(url);
+  }
+
+  /**
+   *
    * @param controller
    * @param action
    * @param data
@@ -153,6 +187,17 @@ export default class Api {
    */
   static put(controller, action, data = {}) {
     return new this.requestClass(controller, action, data, 'PUT');
+  }
+
+  /**
+   *
+   * @param controller
+   * @param action
+   * @param data
+   * @returns {ApiRequest}
+   */
+  static patch(controller, action, data = {}) {
+    return new this.requestClass(controller, action, data, 'PATCH');
   }
 
   /**
