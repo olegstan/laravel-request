@@ -1,4 +1,4 @@
-import ApiRequest from "./ApiRequest";
+import ApiRequest from "./ApiRequest.js";
 import axios from "axios";
 import { decode } from "@msgpack/msgpack";
 

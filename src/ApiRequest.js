@@ -1,6 +1,6 @@
-import Api from "./Api";
-import Builder from "./Builder";
-import Binding from "./Binding";
+import Api from "./Api.js";
+import Builder from "./Builder.js";
+import Binding from "./Binding.js";
 import axios from "axios";
 
 /**
@@ -219,6 +219,19 @@ export default class ApiRequest {
   )
   {
     return this.executeRequest(successCallback, errorCallback, finalCallback, params, byUrl)
+  }
+
+  /**
+   * Returns built query array and arguments without executing the request.
+   * Useful for testing and debugging.
+   * @return {{ query: Array, data: object, arguments: Array }}
+   */
+  getBuiltPayload() {
+    return {
+      query: this.builder.toArray(),
+      data: this.data,
+      arguments: this.arguments,
+    };
   }
 
   /**
