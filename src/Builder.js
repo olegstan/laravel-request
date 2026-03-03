@@ -60,7 +60,17 @@ export default class Builder {
             if (typeof val == 'function') {
                 var func = val;
                 args[key] = {query: new Builder()};
-                args[key].query = func(args[key].query).toArray();
+
+                var result = func(args[key].query);
+
+                if (!(result instanceof Builder)) {
+                    throw new Error(
+                        'Callback for "' + method + '" must return instance of Builder. ' +
+                        'Did you forget "return query" in the callback?'
+                    );
+                }
+
+                args[key].query = result.toArray();
             }
 
           return;
